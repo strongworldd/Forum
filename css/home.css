@@ -37,7 +37,7 @@ body {
     cursor: pointer;
 }
 .logo img {
-    height: 24px;
+    height: 40px;
 }
 .search-form input {
     width: 300px;
@@ -139,7 +139,6 @@ body {
 }
 .content img {
     width: 100%;
-    border-radius: 4px;
     margin-bottom: 0.6rem;
 }
 .actions {
@@ -193,4 +192,38 @@ body {
 .sidebar-right .see-more a {
     color: #ff4500;
     font-size: 0.9rem;
+}
+
+.image-wrapper {
+    position: relative;
+    width: 100%; /* Limite la largeur à celle du conteneur parent */
+    height: 500px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto; /* Centre la boîte si nécessaire */
+}
+
+.image-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: inherit;
+    background-size: cover; /* Assure que le fond flou couvre toute la boîte */
+    background-position: center;
+    filter: blur(20px);
+    transform: scale(1.1); /* Légèrement agrandi pour dépasser les bords */
+    z-index: 1;
+    width: 100%; /* S'assure que le fond flou ne dépasse pas */
+    height: 100%; /* S'assure que le fond flou ne dépasse pas */
+}
+
+.image-wrapper img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-height: 502px;
+    width: auto;
+    transform: translate(-50%, -50%);
+    z-index: 2;
 }
