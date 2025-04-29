@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reddit Clone Dark</title>
+  <link rel="stylesheet" href="/css/home.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="left">
+        <button class="menu-btn">☰</button>
+        <div class="logo">
+          <img src="logo-reddit-white.svg" alt="reddit" />
+        </div>
+      </div>
+      <div class="center">
+        <form class="search-form">
+          <input type="text" placeholder="Rechercher sur Reddit" />
+        </form>
+      </div>
+      <div class="right">
+        <button class="btn download">Télécharger l’appli</button>
+        <button class="btn login">Se connecter</button>
+        <button class="btn avatar">⋯</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container main">
+    <div id="sidebar-container"></div>
+
+    <section class="feed">
+      <article class="post">
+        <div class="votes">
+          <button>▲</button>
+          <span>123</span>
+          <button>▼</button>
+        </div>
+        <div class="content">
+          <div class="post-header">
+            <span class="subreddit">r/france</span>
+            <span class="dot">•</span>
+            <span class="time">il y a 15 h</span>
+          </div>
+          <h2 class="title">
+            Le compte Twitter de Valeurs actuelles annonce Hanouna candidat pour 2027
+          </h2>
+          <img src="img.jpg" alt="Couverture Valeurs actuelles" />
+          <div class="actions">
+            <button class="action-btn">💬 45</button>
+            <button class="action-btn">↗ 10</button>
+            <button class="action-btn">💾</button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Sidebar droite -->
+    <aside class="sidebar-right">
+      <div class="widget">
+        <h3>Communautés populaires</h3>
+        <ul>
+          <li><a href="#"><img src="icon-explain.svg" alt="" /> r/explainlikeimfive <span>23 227 634</span></a></li>
+          <li><a href="#"><img src="icon-ama.svg" alt="" /> r/IAmA <span>22 474 868</span></a></li>
+          <li><a href="#"><img src="icon-wow.svg" alt="" /> r/classicwow <span>678 172</span></a></li>
+          <li><a href="#"><img src="icon-ig.svg" alt="" /> r/Instagram <span>972 521</span></a></li>
+          <li><a href="#"><img src="icon-switch.svg" alt="" /> r/NintendoSwitch <span>7 824 579</span></a></li>
+          <li class="see-more"><a href="#">En voir plus</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Charge la sidebar
+    fetch('sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        // Animation des sous-menus
+        document.querySelectorAll('.sidebar-left .collapse-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            btn.parentElement.classList.toggle('open');
+          });
+        });
+        // Toggle ouverture/fermeture de la sidebar entière
+        document.querySelector('.menu-btn').addEventListener('click', () => {
+          document.querySelector('.sidebar-left').classList.toggle('collapsed');
+        });
+      })
+      .catch(err => console.error('Impossible de charger sidebar.html:', err));
+  </script>
+</body>
+</html>
