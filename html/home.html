@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reddit Clone Dark</title>
+  <title>Reddit Clone</title>
+  <link rel="stylesheet" href="/css/topbar.css" />
   <link rel="stylesheet" href="/css/home.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
 </head>
@@ -11,7 +12,6 @@
   <header class="topbar">
     <div class="container">
       <div class="left">
-        <button class="menu-btn">☰</button>
         <div class="logo">
           <img src="/img/logoreddit.png" alt="reddit" />
         </div>
@@ -30,15 +30,15 @@
   </header>
 
   <div class="container main">
-    <div id="sidebar-container"></div>
+    <div class="sidebar-wrapper">
+      <button class="menu-btn">☰</button>
+      <div id="sidebar-container">
+        
+      </div>
+    </div>
 
     <section class="feed">
       <article class="post">
-        <div class="votes">
-          <button>▲</button>
-          <span>123</span>
-          <button>▼</button>
-        </div>
         <div class="content">
           <div class="post-header">
             <span class="subreddit">r/france</span>
@@ -48,8 +48,10 @@
           <h2 class="title">
             Le compte Twitter de Valeurs actuelles annonce Hanouna candidat pour 2027
           </h2>
-          <div class="image-wrapper" style="background-image:url('/img/ug4pl8obklxe1.jpeg');">
-            <img src="/img/ug4pl8obklxe1.jpeg" alt="Couverture Valeurs actuelles" />
+          <div class="image-wrapper"
+               style="background-image:url('/img/ug4pl8obklxe1.jpeg');">
+            <img src="/img/ug4pl8obklxe1.jpeg"
+                 alt="Couverture Valeurs actuelles" />
           </div>
           <div class="actions">
             <button class="action-btn">💬 45</button>
@@ -60,7 +62,6 @@
       </article>
     </section>
 
-    <!-- Sidebar droite -->
     <aside class="sidebar-right">
       <div class="widget">
         <h3>Communautés populaires</h3>
@@ -77,23 +78,20 @@
   </div>
 
   <script>
-    // Charge la sidebar
     fetch('sidebar.html')
       .then(res => res.text())
       .then(html => {
         document.getElementById('sidebar-container').innerHTML = html;
-        // Animation des sous-menus
         document.querySelectorAll('.sidebar-left .collapse-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            btn.parentElement.classList.toggle('open');
-          });
+          btn.addEventListener('click', () =>
+            btn.parentElement.classList.toggle('open')
+          );
         });
-        // Toggle ouverture/fermeture de la sidebar entière
         document.querySelector('.menu-btn').addEventListener('click', () => {
           document.querySelector('.sidebar-left').classList.toggle('collapsed');
         });
       })
-      .catch(err => console.error('Impossible de charger sidebar.html:', err));
+      .catch(err => console.error('Impossible de charger sidebar.html :', err));
   </script>
 </body>
 </html>
