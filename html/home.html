@@ -31,10 +31,9 @@
 
   <div class="container main">
     <div class="sidebar-wrapper">
-      <button class="menu-btn">☰</button>
       <div id="sidebar-container">
-        
       </div>
+      <button class="menu-btn">☰</button>
     </div>
 
     <section class="feed">
@@ -87,8 +86,12 @@
             btn.parentElement.classList.toggle('open')
           );
         });
+  
+        const sidebar = document.querySelector('.sidebar-left');
+        const main    = document.querySelector('.container.main');
         document.querySelector('.menu-btn').addEventListener('click', () => {
-          document.querySelector('.sidebar-left').classList.toggle('collapsed');
+          sidebar.classList.toggle('collapsed');
+          main.classList.toggle('shifted');
         });
       })
       .catch(err => console.error('Impossible de charger sidebar.html :', err));
