@@ -1,16 +1,17 @@
 .sidebar-left {
-    position: relative;
-    width: 250px;
-    transition: transform 0.3s ease;
-    overflow-y: auto; 
-    overflow-x: hidden; 
-    max-height: 100vh; 
-    padding-bottom: 1rem;
-    z-index: 1000 !important;
+    position: relative; /* Change de fixed à relative */
+    top: 0; /* Supprime la dépendance à la top bar */
+    height: 100%; /* Occupe toute la hauteur du conteneur parent */
+    max-height: calc(100vh - 85px); /* Limite la hauteur pour éviter de dépasser la fenêtre */
+    overflow-y: auto; /* Active le défilement vertical */
+    overflow-x: hidden; /* Désactive le défilement horizontal */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+    padding-right: 12px; /* Ajoute un espace pour la scrollbar */
 }
-
 .sidebar-left.collapsed {
     transform: translateX(-100%);
+    transition: transform 0.3s ease;
 }
 
 .sidebar-left nav ul,
@@ -45,8 +46,6 @@
   background-color: #343536;
   color: #ffffff;
 }
-
-
 
 .sidebar-left .arrow-container {
     margin-left: auto;
