@@ -1,6 +1,6 @@
 .sidebar-left {
     position: relative;
-    width: 240px;
+    width: 250px;
     transition: transform 0.3s ease;
     overflow: hidden;
 }
@@ -21,13 +21,13 @@
 .sidebar-left .submenu li a {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 0.6rem 0.8rem;
     margin: 0.2rem 0;
     color: #d7dadc;
     background-color: transparent;
     border: none;
-    border-radius: 9999px;
+    border-radius: 6px;
     font-size: 0.9rem;
     text-decoration: none;
     cursor: pointer;
@@ -37,10 +37,12 @@
 .sidebar-left .collapse-btn:hover,
 .sidebar-left .see-more a:hover,
 .sidebar-left .submenu li a:hover,
-.sidebar-left li.has-submenu > input[type="checkbox"]:checked + label.collapse-btn {
-    background-color: #343536;
-    color: #ffffff;
+.sidebar-left .collapse-btn:active {
+  background-color: #343536;
+  color: #ffffff;
 }
+
+
 
 .sidebar-left .arrow-container {
     margin-left: auto;
@@ -63,23 +65,13 @@
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.3s ease, opacity 0.2s ease;
-    padding-left: 1.5rem;
+    padding-left: 1rem;
     margin: 0;
 }
 
 .sidebar-left li.has-submenu > input[type="checkbox"]:checked + label.collapse-btn + .submenu {
     max-height: 500px;
     opacity: 1;
-}
-
-.menu-btn {
-    background: none;
-    border: none;
-    color: #d7dadc;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-right: 0.5rem;
 }
 
 .sidebar-left ul,
@@ -97,4 +89,28 @@
     font-size: 0.8rem;
     color: #ff4500;
     margin-left: 0.1rem;
+}
+
+.collapse-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+}
+
+.collapse-btn .icon {
+    width: 30px; 
+    height: 30px;
+    flex-shrink: 0; 
+}
+
+.sidebar-left .submenu li a {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+}
+
+.sidebar-left .submenu li a .icon {
+    width: 30px; 
+    height: 30px;
+    flex-shrink: 0; 
 }

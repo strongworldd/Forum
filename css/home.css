@@ -23,7 +23,7 @@ body {
     flex-direction: column;   
     align-items: flex-end;   
     gap: 1rem;                
-    padding-left: 10rem;       
+    padding-left: 8rem;       
 }
 
 .post {
@@ -165,6 +165,17 @@ body {
 
 .sidebar-toggle:hover {
     color: #ffffff;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    color: #d7dadc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    margin-left: 1.5rem;
 }
 
 .sidebar-wrapper {
