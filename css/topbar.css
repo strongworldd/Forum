@@ -38,6 +38,7 @@
     position: relative;
     width: 500px; 
     margin: 0 auto;
+    margin-left: 10rem;
 }
 .search-form input {
     width: 100%;

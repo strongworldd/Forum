@@ -3,6 +3,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Noto Sans", Arial, sans-serif;
+    box-sizing: border-box;
 }
 
 body {
@@ -23,7 +24,7 @@ body {
     flex-direction: column;   
     align-items: flex-end;   
     gap: 1rem;                
-    padding-left: 8rem;       
+    padding-left: 6rem;       
 }
 
 .post {
@@ -183,6 +184,7 @@ body {
     align-items: flex-start; 
     position: relative;
     margin-left: 0;
+    overflow-y: auto;
 }
   
 .sidebar-wrapper #sidebar-container {
