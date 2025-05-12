@@ -1,13 +1,13 @@
 .sidebar-left {
-    position: relative; /* Change de fixed à relative */
-    top: 0; /* Supprime la dépendance à la top bar */
-    height: 100%; /* Occupe toute la hauteur du conteneur parent */
-    max-height: calc(100vh - 85px); /* Limite la hauteur pour éviter de dépasser la fenêtre */
-    overflow-y: auto; /* Active le défilement vertical */
-    overflow-x: hidden; /* Désactive le défilement horizontal */
+    position: relative; 
+    top: 0; 
+    height: 100%; 
+    max-height: calc(100vh - 85px); 
+    overflow-y: auto; 
+    overflow-x: hidden; 
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
-    padding-right: 12px; /* Ajoute un espace pour la scrollbar */
+    padding-right: 12px; 
 }
 .sidebar-left.collapsed {
     transform: translateX(-100%);
