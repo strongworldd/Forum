@@ -32,6 +32,7 @@
   <div class="container main">
     <div class="sidebar-wrapper">
       <div id="sidebar-container">
+        <!-- contenu chargé dynamiquement -->
       </div>
       <button class="menu-btn">☰</button>
     </div>
@@ -47,10 +48,8 @@
           <h2 class="title">
             Le compte Twitter de Valeurs actuelles annonce Hanouna candidat pour 2027
           </h2>
-          <div class="image-wrapper"
-               style="background-image:url('/img/ug4pl8obklxe1.jpeg');">
-            <img src="/img/ug4pl8obklxe1.jpeg"
-                 alt="Couverture Valeurs actuelles" />
+          <div class="image-wrapper" style="background-image:url('/img/ug4pl8obklxe1.jpeg');">
+            <img src="/img/ug4pl8obklxe1.jpeg" alt="Couverture Valeurs actuelles" />
           </div>
           <div class="actions">
             <button class="action-btn">💬 45</button>
@@ -62,15 +61,47 @@
     </section>
 
     <aside class="sidebar-right">
-      <div class="widget">
+      <div class="widget popular-communities">
         <h3>Communautés populaires</h3>
-        <ul>
-          <li><a href="#"><img src="/img/explainlikeimfive.jpg" alt="" /> r/explainlikeimfive <span>23 227 634</span></a></li>
-          <li><a href="#"><img src="/img/iama.jpg" alt="" /> r/IAmA <span>22 474 868</span></a></li>
-          <li><a href="#"><img src="/img/classicwow.jpg" alt="" /> r/classicwow <span>678 172</span></a></li>
-          <li><a href="#"><img src="/img/Instagram.jpg" alt="" /> r/Instagram <span>972 521</span></a></li>
-          <li><a href="#"><img src="/img/NintendoSwitch.jpg" alt="" /> r/NintendoSwitch <span>7 824 579</span></a></li>
-          <li class="see-more"><a href="#">En voir plus</a></li>
+        <ul class="communities-list">
+          <li class="community-item">
+              <img src="/img/explainlikeimfive.jpg" alt="r/explainlikeimfive" class="avatar" />
+              <div class="info">
+                <span class="name">r/explainlikeimfive</span>
+                <span class="subs">23 227 634</span>
+              </div>
+          </li>
+            <li class="community-item">
+                <img src="/img/iama.jpg" alt="Avatar" class="avatar" />
+                <div class="info">
+                    <span class="name">r/IAmA</span>
+                    <span class="subs">22 474 868</span>
+                </div>
+            </li>
+          <li class="community-item">
+              <img src="/img/classicwow.jpg" alt="r/classicwow" class="avatar" />
+              <div class="info">
+                <span class="name">r/classicwow</span>
+                <span class="subs">678 172</span>
+              </div>
+          </li>
+          <li class="community-item">
+              <img src="/img/Instagram.jpg" alt="r/Instagram" class="avatar" />
+              <div class="info">
+                <span class="name">r/Instagram</span>
+                <span class="subs">972 521</span>
+              </div>
+          </li>
+          <li class="community-item">
+              <img src="/img/NintendoSwitch.jpg" alt="r/NintendoSwitch" class="avatar" />
+              <div class="info">
+                <span class="name">r/NintendoSwitch</span>
+                <span class="subs">7 824 579</span>
+              </div>
+          </li>
+          <li class="see-more">
+            <a href="#">En voir plus</a>
+          </li>
         </ul>
       </div>
     </aside>
