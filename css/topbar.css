@@ -27,7 +27,7 @@
     cursor: pointer;
 }
 .logo img {
-    height: 40px;
+    height: 50px;
 }
 .topbar .right .btn + .btn {
     margin-left: 0.5rem;
@@ -36,36 +36,33 @@
 /* Barre de recherche */
 .search-form {
     position: relative;
-    width: 500px; 
+    width: 600px; 
     margin: 0 auto;
     margin-left: 10rem;
 }
 .search-form input {
     width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    padding: 0.8rem 2.5rem 0.8rem 2.8rem;
     font-size: 0.9rem;
     color: #d7dadc;
-    background: #2a2c2e;
+    background: #2a2c2e url('/img/search-icon.png') no-repeat 1rem center; 
     border: none;
     border-radius: 9999px;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-    /*background-image: url('/img/search-icon.png');*/
-    background-repeat: no-repeat;
-    background-position: 1rem center;
-    background-size: 16px;
+    background-size: 25px; 
 }
 .search-form input::placeholder {
     color: #8a8b8d;
 }
 .search-form input:hover {
-    background: #343536;
+    background: #343536 url('/img/search-icon.png') no-repeat 1rem center; 
+    background-size: 25px;
 }
 .search-form input:focus {
     outline: none;
-    background: #343536;
+    background: #2a2c2e url('/img/search-icon.png') no-repeat 1rem center; 
     box-shadow: 0 0 0 2px #ff4500;
+    background-size: 25px; 
 }
-
 .btn {
     display: inline-flex;
     align-items: center;
