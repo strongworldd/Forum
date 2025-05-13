@@ -1,8 +1,12 @@
 .topbar {
+    position: fixed; /* Fixe la topbar en haut de la page */
+    top: 0; /* Positionne la topbar en haut */
+    left: 0;
+    width: 100%; /* Assure qu'elle couvre toute la largeur */
     background: #222426;
     border-bottom: 1px solid #343536;
-    width: 100%;              
-  }
+    z-index: 1000; /* Assure qu'elle reste au-dessus des autres éléments */
+}
 
   .topbar .container {
     display: flex;
