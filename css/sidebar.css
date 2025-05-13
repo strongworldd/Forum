@@ -166,13 +166,16 @@
 }
 
 .sidebar-wrapper {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    margin-left: 0;
-    overflow-y: auto;
+    position: fixed; 
+    top: 4.45rem; 
+    left: 0; 
+    height: 100vh; 
+    width: 240px; 
+    background-color: #1a1a1b; 
+    overflow-y: auto; 
+    z-index: 1000; 
+    border-right: 1px solid #343536;
 }
-
 .sidebar-wrapper #sidebar-container {
     width: 240px;
 }

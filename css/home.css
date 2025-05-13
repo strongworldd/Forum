@@ -13,18 +13,15 @@ body {
 .container.main {
     display: flex;
     transition: transform 0.3s ease;
-    gap: 2rem;
-    width: calc(100% - 2rem);
-    margin: 1rem auto 0;
+    padding-left: 29rem;
+    margin: 0 auto; 
+    padding-top: 5.3rem; 
 }
 
 .feed {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 1rem;
-    padding-left: 10rem;
-    margin-top: 4rem;
 }
 
 .post {

@@ -37,7 +37,7 @@
       <button class="menu-btn">☰</button>
     </div>
 
-    <section class="feed">
+    <div class="feed">
       <article class="post">
         <div class="content">
           <div class="post-header">
@@ -58,9 +58,8 @@
           </div>
         </div>
       </article>
-    </section>
-
-    <aside class="sidebar-right">
+    </div>
+    <div class="sidebar-right">
       <div class="widget popular-communities">
         <h3>Communautés populaires</h3>
         <ul class="communities-list">
@@ -104,8 +103,8 @@
           </li>
         </ul>
       </div>
-    </aside>
-  </div>
+    </div>
+    </div>
 
   <script>
     fetch('sidebar.html')
@@ -118,11 +117,13 @@
           );
         });
   
+        const menuBtn = document.querySelector('.menu-btn');
         const sidebar = document.querySelector('.sidebar-left');
-        const main    = document.querySelector('.container.main');
-        document.querySelector('.menu-btn').addEventListener('click', () => {
-          sidebar.classList.toggle('collapsed');
-          main.classList.toggle('shifted');
+        const mainContainer = document.querySelector('.container.main');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContainer.classList.toggle('shifted');
         });
       })
       .catch(err => console.error('Impossible de charger sidebar.html :', err));
