@@ -296,3 +296,10 @@ body {
     background-color: #c03300; 
     transform: scale(1.05); 
 }
+
+.widget.popular-communities {
+    margin-top: 0; 
+    position: relative; 
+    top: -4rem; 
+    left: 4rem;
+}
