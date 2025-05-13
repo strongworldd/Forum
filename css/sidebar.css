@@ -2,8 +2,7 @@
     position: fixed; 
     top: 4.45rem;
     left: 0;
-    height: 100vh; 
-    max-height: 100vh; 
+    height: calc(100vh - 4.45rem);  
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
@@ -169,7 +168,7 @@
     position: fixed; 
     top: 4.45rem; 
     left: 0; 
-    height: 100vh; 
+    height: calc(100vh - 4.45rem); 
     width: 240px; 
     background-color: #1a1a1b; 
     overflow-y: auto; 
