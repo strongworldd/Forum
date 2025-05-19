@@ -29,12 +29,13 @@
     </div>
   </header>
 
+  <button class="menu-btn">☰</button>
+
   <div class="container main">
     <div class="sidebar-wrapper">
       <div id="sidebar-container">
         <!-- contenu chargé dynamiquement -->
       </div>
-      <button class="menu-btn">☰</button>
     </div>
 
     <div class="feed">
@@ -122,6 +123,7 @@
         menuBtn.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             mainContainer.classList.toggle('shifted');
+            menuBtn.classList.toggle('menu-btn-shifted'); // AJOUTE CETTE LIGNE
         });
       })
       .catch(err => console.error('Impossible de charger sidebar.html :', err));
