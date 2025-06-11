@@ -6,8 +6,22 @@ import (
 )
 
 func main() {
-	tables.ResetAccountsTable()
-	tables.LoadAccounts()
+	tables.CheckPostDB()
 	tables.ResetPostsTable()
+	tables.LoadAccounts()
+	tables.LoadPosts()
+
+	tables.CreatePost()
+	tables.CreatePost()
+	tables.CreatePost()
+
+	tables.Deletepost(2)
+
+	tables.LoadPosts()
+
+	tables.CreatePost()
+
+	tables.LoadPosts()
+
 	fmt.Println("Database operations completed successfully.")
 }

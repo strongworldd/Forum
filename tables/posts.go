@@ -13,7 +13,13 @@ func ResetPostsTable() {
     _, _ = database.Exec("DELETE FROM posts")
 }
 
-func LoadPosts() {
+func Deletepost(id int) {
+	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+    defer database.Close()
+    _, _ = database.Exec("DELETE FROM posts WHERE id = ?", id)
+}
+
+func CreatePost() {
 	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
 	defer database.Close()
 
@@ -22,6 +28,19 @@ func LoadPosts() {
 
 	statement, _ = database.Prepare("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)")
 	statement.Exec("First Post", "This is the content of the first post.", "John Doe")
+}
+
+func CheckPostDB() {
+	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	defer database.Close()
+
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, title TEXT, content TEXT, author TEXT)")
+	statement.Exec()
+}
+
+func LoadPosts() {
+	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	defer database.Close()
 
 	rows, _ := database.Query("SELECT id, title, content, author FROM posts")
 	defer rows.Close()

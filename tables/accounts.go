@@ -13,16 +13,38 @@ func ResetAccountsTable() {
     _, _ = database.Exec("DELETE FROM people")
 }
 
-func LoadAccounts() {
+func DeleteAccount(id int) {
+	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
+    defer database.Close()
+    _, _ = database.Exec("DELETE FROM people WHERE id = ?", id)
+}
+
+func CheckAccountDB() {
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
 	statement.Exec()
+}
+
+func CreateAccount(username string, password string) {
+	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
+	defer database.Close()
+
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
+	statement.Exec()
+
 	statement, _ = database.Prepare("INSERT INTO people (name, password, postliked) VALUES (?, ?, ?)")
-	statement.Exec("John Doe", "secret123", arraytostr([]int{1, 2, 3}))
+	statement.Exec(username, password, "")
+}
+
+func LoadAccounts() {
+	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
+	defer database.Close()
+
 	rows, _ := database.Query("SELECT id, name, password, postliked FROM people")
-	fmt.Println(rows)
+	defer rows.Close()
+	
 	var id int
 	var name string
 	var password string
@@ -31,7 +53,6 @@ func LoadAccounts() {
 		rows.Scan(&id, &name, &password, &postliked)
 		fmt.Println(strconv.Itoa(id) + ": " + name + " pass: " + password + " Likes: " + postliked)
 	}
-	fmt.Println("End")
 }
 
 func strtoarray(s string) []int {
