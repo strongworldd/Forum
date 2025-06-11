@@ -7,21 +7,17 @@ import (
 
 func main() {
 	tables.CheckPostDB()
+	tables.CheckAccountDB()
+
 	tables.ResetPostsTable()
+	tables.ResetAccountsTable()
+
 	tables.LoadAccounts()
-	tables.LoadPosts()
 
-	tables.CreatePost()
-	tables.CreatePost()
-	tables.CreatePost()
+	tables.CreateAccount("Alice", "password123")
+	tables.CheckAccountName("Josh")
 
-	tables.Deletepost(2)
-
-	tables.LoadPosts()
-
-	tables.CreatePost()
-
-	tables.LoadPosts()
+	tables.LoadAccounts()
 
 	fmt.Println("Database operations completed successfully.")
 }

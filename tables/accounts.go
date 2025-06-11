@@ -27,15 +27,29 @@ func CheckAccountDB() {
 	statement.Exec()
 }
 
-func CreateAccount(username string, password string) {
+func CheckAccountName(username string) bool {
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
-	statement.Exec()
+	rows, _ := database.Query("SELECT id, name, password, postliked FROM people WHERE name = ?", username)
+	defer rows.Close()
 
-	statement, _ = database.Prepare("INSERT INTO people (name, password, postliked) VALUES (?, ?, ?)")
-	statement.Exec(username, password, "")
+	return rows.Next()
+}
+
+func CreateAccount(username string, password string) bool{
+	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
+	defer database.Close()
+
+	if !CheckAccountName(username) {
+		statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
+		statement.Exec()
+
+		statement, _ = database.Prepare("INSERT INTO people (name, password, postliked) VALUES (?, ?, ?)")
+		statement.Exec(username, password, "")
+		return true
+	}
+	return false
 }
 
 func LoadAccounts() {
@@ -44,7 +58,7 @@ func LoadAccounts() {
 
 	rows, _ := database.Query("SELECT id, name, password, postliked FROM people")
 	defer rows.Close()
-	
+
 	var id int
 	var name string
 	var password string
