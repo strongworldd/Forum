@@ -268,3 +268,20 @@ body {
 .communities-list li {
     list-style: none;
 }
+
+.btn.create-post {
+    background-color: #ff4500;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: background 0.2s, transform 0.2s;
+}
+.btn.create-post:hover {
+    background-color: #c03300;
+    transform: scale(1.05);
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reddit Clone</title>
+  <link rel="stylesheet" href="/css/topbar.css" />
+  <link rel="stylesheet" href="/css/home.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="left">
+        <div class="logo">
+          <img src="/img/logopanddit.png" alt="reddit" />
+        </div>
+      </div>
+      <div class="center">
+        <form class="search-form">
+          <input type="text" placeholder="Rechercher sur Reddit" />
+        </form>
+      </div>
+      <div class="right">
+        <button class="btn download">Télécharger l’appli</button>
+        <button class="btn login">Se déconnecter</button>
+        <button class="btn avatar">⋯</button>
+      </div>
+    </div>
+  </header>
+
+  <button class="menu-btn">☰</button>
+
+  <div class="container main">
+    <div class="sidebar-wrapper">
+      <div id="sidebar-container">
+        <!-- contenu chargé dynamiquement -->
+      </div>
+    </div>
+
+    <div class="feed">
+      <!-- Bouton création de post -->
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+        <button class="btn create-post" onclick="window.location.href='/html/createpost.html'">
+          + Créer un post
+        </button>
+      </div>
+      <article class="post">
+        <div class="content">
+          <div class="post-header">
+            <span class="subreddit">r/france</span>
+            <span class="dot">•</span>
+            <span class="time">il y a 15 h</span>
+          </div>
+          <h2 class="title">
+            Le compte Twitter de Valeurs actuelles annonce Hanouna candidat pour 2027
+          </h2>
+          <div class="image-wrapper">
+            <img src="/img/ug4pl8obklxe1.jpeg" alt="Couverture Valeurs actuelles" />
+          </div>
+          <div class="actions">
+            <button class="action-btn">↗ 10</button>
+            <button class="action-btn">💬 45</button>
+            <button class="action-btn">💾</button>
+          </div>
+        </div>
+      </article>
+    </div>
+      <div class="widget popular-communities">
+        <h3>Communautés<br>Populaires</h3>
+        <ul class="communities-list">
+          <li class="community-item">
+              <img src="/img/explainlikeimfive.jpg" alt="r/explainlikeimfive" class="avatar" />
+              <div class="info">
+                <span class="name">r/explainlikeimfive</span>
+                <span class="subs">23 227 634</span>
+              </div>
+          </li>
+            <li class="community-item">
+                <img src="/img/iama.jpg" alt="Avatar" class="avatar" />
+                <div class="info">
+                    <span class="name">r/IAmA</span>
+                    <span class="subs">22 474 868</span>
+                </div>
+            </li>
+          <li class="community-item">
+              <img src="/img/classicwow.jpg" alt="r/classicwow" class="avatar" />
+              <div class="info">
+                <span class="name">r/classicwow</span>
+                <span class="subs">678 172</span>
+              </div>
+          </li>
+          <li class="community-item">
+              <img src="/img/Instagram.jpg" alt="r/Instagram" class="avatar" />
+              <div class="info">
+                <span class="name">r/Instagram</span>
+                <span class="subs">972 521</span>
+              </div>
+          </li>
+          <li class="community-item">
+              <img src="/img/NintendoSwitch.jpg" alt="r/NintendoSwitch" class="avatar" />
+              <div class="info">
+                <span class="name">r/NintendoSwitch</span>
+                <span class="subs">7 824 579</span>
+              </div>
+          </li>
+          <li class="see-more">
+            <a href="#">En voir plus</a>
+          </li>
+        </ul>
+    </div>
+    </div>
+
+  <script>
+    fetch('sidebar copy.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('.sidebar-left .collapse-btn').forEach(btn => {
+          btn.addEventListener('click', () =>
+            btn.parentElement.classList.toggle('open')
+          );
+        });
+  
+        const menuBtn = document.querySelector('.menu-btn');
+        const sidebar = document.querySelector('.sidebar-left');
+        const mainContainer = document.querySelector('.container.main');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContainer.classList.toggle('shifted');
+            menuBtn.classList.toggle('menu-btn-shifted');
+        });
+      })
+  </script>
+  <script>
+  document.querySelector('.btn.login').addEventListener('click', function() {
+    window.location.href = '/html/home.html';
+  });
+</script>
+</body>
+</html>
