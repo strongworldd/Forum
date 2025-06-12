@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription - Forum</title>
+  <link rel="stylesheet" href="login.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo">
+        <h1>Forum</h1>
+      </div>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="username">Nom d'utilisateur</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" name="password" required>
+          <div class="password-icon">
+            <i data-feather="eye" id="password-eye-open"></i>
+            <i data-feather="eye-off" id="password-eye-closed" style="display: none;"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirmer le mot de passe</label>
+          <input type="password" id="confirm-password" name="confirm-password" required>
+          <div class="password-icon">
+            <i data-feather="eye" id="confirm-eye-open"></i>
+            <i data-feather="eye-off" id="confirm-eye-closed" style="display: none;"></i>
+          </div>
+        </div>
+        <button type="submit" class="login-button">S'inscrire</button>
+        <div class="form-footer">
+          <p>Déjà un compte ? <a href="login.html">Se connecter</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+
+    function togglePassword(inputId, eyeOpenId, eyeClosedId) {
+      const input = document.getElementById(inputId);
+      const eyeOpen = document.getElementById(eyeOpenId);
+      const eyeClosed = document.getElementById(eyeClosedId);
+
+      eyeOpen.addEventListener("click", () => {
+        input.type = "text";
+        eyeOpen.style.display = "none";
+        eyeClosed.style.display = "inline";
+      });
+
+      eyeClosed.addEventListener("click", () => {
+        input.type = "password";
+        eyeClosed.style.display = "none";
+        eyeOpen.style.display = "inline";
+      });
+    }
+
+    togglePassword("password", "password-eye-open", "password-eye-closed");
+    togglePassword("confirm-password", "confirm-eye-open", "confirm-eye-closed");
+  </script>
+</body>
+</html>
