@@ -28,6 +28,8 @@ func CreatePost() {
 
 	statement, _ = database.Prepare("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)")
 	statement.Exec("First Post", "This is the content of the first post.", "John Doe")
+
+	fmt.Println("Post loaded successfully.")
 }
 
 func CheckPostDB() {

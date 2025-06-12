@@ -25,6 +25,8 @@ func CheckAccountDB() {
 
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, mail TEXT, password TEXT, postliked TEXT)")
 	statement.Exec()
+
+	fmt.Println("Account loaded successfully")
 }
 
 func CheckAccountName(username string) bool {
@@ -44,6 +46,13 @@ func CreateAccount(username string, mail string, password string) bool{
 	if !CheckAccountName(username) {
 		statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, mail TEXT, password TEXT, postliked TEXT)")
 		statement.Exec()
+
+		newpass, err := hashPassword(password)
+		if err != nil {
+			fmt.Println("Error hashing password:", err)
+			return false
+		}
+		password = newpass
 
 		statement, _ = database.Prepare("INSERT INTO people (name, mail, password, postliked) VALUES (?, ?, ?, ?)")
 		statement.Exec(username, mail, password, "")
