@@ -23,7 +23,7 @@ func CheckAccountDB() {
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, mail TEXT, password TEXT, postliked TEXT)")
 	statement.Exec()
 }
 
@@ -37,16 +37,17 @@ func CheckAccountName(username string) bool {
 	return rows.Next()
 }
 
-func CreateAccount(username string, password string) bool{
+func CreateAccount(username string, mail string, password string) bool{
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
 	if !CheckAccountName(username) {
-		statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
+		statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, mail TEXT, password TEXT, postliked TEXT)")
 		statement.Exec()
 
-		statement, _ = database.Prepare("INSERT INTO people (name, password, postliked) VALUES (?, ?, ?)")
-		statement.Exec(username, password, "")
+		statement, _ = database.Prepare("INSERT INTO people (name, mail, password, postliked) VALUES (?, ?, ?, ?)")
+		statement.Exec(username, mail, password, "")
+		fmt.Println("Account created successfully for:", username)
 		return true
 	}
 	return false
@@ -56,16 +57,17 @@ func LoadAccounts() {
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
-	rows, _ := database.Query("SELECT id, name, password, postliked FROM people")
+	rows, _ := database.Query("SELECT id, name, mail, password, postliked FROM people")
 	defer rows.Close()
 
 	var id int
 	var name string
+	var mail string
 	var password string
 	var postliked string
 	for rows.Next() {
-		rows.Scan(&id, &name, &password, &postliked)
-		fmt.Println(strconv.Itoa(id) + ": " + name + " pass: " + password + " Likes: " + postliked)
+		rows.Scan(&id, &name, &mail, &password, &postliked)
+		fmt.Println(strconv.Itoa(id) + ": " + name + " email: " + mail + " pass: " + password + " Likes: " + postliked)
 	}
 }
 
