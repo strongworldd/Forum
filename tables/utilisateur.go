@@ -2,98 +2,105 @@ package tables
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
-	uuid "github.com/google/uuid"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func NewUser(Pseudo string, HashPass string, db *sql.DB) int {
-	statement, err := db.Prepare("INSERT INTO User (pseudo, password) VALUES(?,?)")
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("error Prepare new user")
-		return (500)
-	}
-	statement.Exec(Pseudo, HashPass)
-	db.Close()
-	return (0)
+type UserRepository struct {
+	DB *sql.DB
 }
 
-func CheckPassword(username string, db *sql.DB) (int, string) {
-	var HashPass string
-	var password string
-
-	tsql, err := db.Query("SELECT password FROM User WHERE pseudo = (?)", username)
-	if err != nil {
-		fmt.Println(err)
-		return 500, HashPass
-	}
-
-	for tsql.Next() {
-		tsql.Scan(&password)
-	}
-	HashPass = password
-	return 0, HashPass
+func NewUserRepository(db *sql.DB) *UserRepository {
+	return &UserRepository{DB: db}
 }
 
-func GetId_User(username string, db *sql.DB) (int, int) {
-	var Id_user int
-
-	tsql, err := db.Query("SELECT Id_user FROM User WHERE pseudo = (?)", username)
+func (repo *UserRepository) CreateUser(pseudo, hashedPassword string) error {
+	stmt, err := repo.DB.Prepare(`INSERT INTO User (pseudo, password) VALUES (?, ?)`)
 	if err != nil {
-		fmt.Println(err)
-		return 500, Id_user
+		return fmt.Errorf("failed to prepare insert user statement: %w", err)
 	}
+	defer stmt.Close()
 
-	for tsql.Next() {
-		tsql.Scan(&Id_user)
+	_, err = stmt.Exec(pseudo, hashedPassword)
+	if err != nil {
+		return fmt.Errorf("failed to execute insert user statement: %w", err)
 	}
-	if Id_user > 0 {
-		return 0, Id_user
-	}
-	return 500, Id_user
+	return nil
 }
 
-func GetAllUsername(db *sql.DB) (int, []string) {
-	var allUsername []string
+func (repo *UserRepository) GetPasswordByUsername(username string) (string, error) {
+	var hashedPassword string
+
+	row := repo.DB.QueryRow(`SELECT password FROM User WHERE pseudo = ?`, username)
+	err := row.Scan(&hashedPassword)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil // user not found
+		}
+		return "", fmt.Errorf("failed to query password: %w", err)
+	}
+	return hashedPassword, nil
+}
+
+func (repo *UserRepository) GetUserID(username string) (int, error) {
+	var userID int
+
+	row := repo.DB.QueryRow(`SELECT Id_user FROM User WHERE pseudo = ?`, username)
+	err := row.Scan(&userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, nil // user not found
+		}
+		return 0, fmt.Errorf("failed to query user id: %w", err)
+	}
+	return userID, nil
+}
+
+func (repo *UserRepository) ListAllUsernames() ([]string, error) {
+	rows, err := repo.DB.Query(`SELECT pseudo FROM User`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query all usernames: %w", err)
+	}
+	defer rows.Close()
+
+	var usernames []string
+	for rows.Next() {
+		var username string
+		if err := rows.Scan(&username); err != nil {
+			return nil, fmt.Errorf("failed to scan username: %w", err)
+		}
+		usernames = append(usernames, username)
+	}
+	return usernames, nil
+}
+
+func (repo *UserRepository) GetUsernameByUUID(userUUID uuid.UUID) (string, error) {
 	var username string
 
-	tsql, err := db.Query("SELECT pseudo FROM User")
+	row := repo.DB.QueryRow(`SELECT pseudo FROM User WHERE uuid = ?`, userUUID.String())
+	err := row.Scan(&username)
 	if err != nil {
-		fmt.Println(err)
-		return 500, allUsername
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil // not found
+		}
+		return "", fmt.Errorf("failed to query username by uuid: %w", err)
 	}
-
-	for tsql.Next() {
-		tsql.Scan(&username)
-		allUsername = append(allUsername, username)
-	}
-	return 0, allUsername
+	return username, nil
 }
 
-func GetUserByUUID(uuid string, db *sql.DB) (int, string) {
-	var username string
-
-	tsql, err := db.Query("SELECT pseudo FROM User WHERE uuid = (?)", uuid) // check for UUID name in database
+func (repo *UserRepository) UpdateUUIDForUser(userUUID uuid.UUID, pseudo string) error {
+	stmt, err := repo.DB.Prepare(`UPDATE User SET uuid = ? WHERE pseudo = ?`)
 	if err != nil {
-		fmt.Println(err)
-		return 400, username
+		return fmt.Errorf("failed to prepare update uuid statement: %w", err)
 	}
-	for tsql.Next() {
-		tsql.Scan(&username)
-	}
-	return 0, username
-}
+	defer stmt.Close()
 
-func PutUUID(UUID uuid.UUID, pseudo string, db *sql.DB) int {
-	statement, err := db.Prepare("UPDATE User SET uuid = ? WHERE (pseudo =?)")
+	_, err = stmt.Exec(userUUID.String(), pseudo)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("error Prepare new user")
-		return (500)
+		return fmt.Errorf("failed to execute update uuid statement: %w", err)
 	}
-	statement.Exec(UUID, pseudo)
-	db.Close()
-	return (0)
+	return nil
 }
