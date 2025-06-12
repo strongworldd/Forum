@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ResetAccountsTable() {
@@ -83,4 +84,12 @@ func arraytostr(arr []int) string {
 		}
 	}
 	return str
+}
+
+func hashPassword(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("failed to hash password: %w", err)
+	}
+	return string(hash), nil
 }
