@@ -6,6 +6,7 @@ import (
 	"strconv"
 	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 func ResetAccountsTable() {
@@ -35,8 +36,15 @@ func CreateAccount(username string, password string) {
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, password TEXT, postliked TEXT)")
 	statement.Exec()
 
+	// hash le mot de passe avant d'insérer
+	hashedPassword, err := hashPassword(password)
+	if err != nil {
+		fmt.Println("Erreur lors du hash:", err)
+		return
+	}
+
 	statement, _ = database.Prepare("INSERT INTO people (name, password, postliked) VALUES (?, ?, ?)")
-	statement.Exec(username, password, "")
+	statement.Exec(username, hashedPassword, "")
 }
 
 func LoadAccounts() {
@@ -92,4 +100,13 @@ func hashPassword(password string) (string, error) {
 		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
 	return string(hash), nil
+}
+
+func comparePasswords(hash, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		log.Println("Erreur de comparaison de mot de passe:", err)
+		return false
+	}
+	return true
 }
