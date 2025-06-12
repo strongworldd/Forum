@@ -17,18 +17,18 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{DB: db}
 }
 
-func (repo *UserRepository) CreateUser(name, hashedPassword string) error {
-	stmt, err := repo.DB.Prepare(`INSERT INTO people (name, password, postliked) VALUES (?, ?, '')`)
-	if err != nil {
-		return fmt.Errorf("failed to prepare insert user statement: %w", err)
-	}
-	defer stmt.Close()
+func (repo *UserRepository) CreateUser(name, hashedPassword, email string) error {
+	stmt, err := repo.DB.Prepare(`INSERT INTO people (name, password, email, postliked) VALUES (?, ?, ?, ?)`)
+    if err != nil {
+        return fmt.Errorf("failed to prepare insert user statement: %w", err)
+    }
+    defer stmt.Close()
 
-	_, err = stmt.Exec(name, hashedPassword)
-	if err != nil {
-		return fmt.Errorf("failed to execute insert user statement: %w", err)
-	}
-	return nil
+    _, err = stmt.Exec(name, hashedPassword, email, "")
+    if err != nil {
+        return fmt.Errorf("failed to execute insert user statement: %w", err)
+    }
+    return nil
 }
 
 func (repo *UserRepository) GetPasswordByUsername(name string) (string, error) {

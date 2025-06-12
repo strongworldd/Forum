@@ -127,6 +127,9 @@
         });
       })
       .catch(err => console.error('Impossible de charger sidebar.html :', err));
+      document.querySelector('.btn.login').addEventListener('click', function() {
+        window.location.href = '/Login/login.html';
+      });
   </script>
 </body>
 </html>
