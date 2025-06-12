@@ -13,7 +13,7 @@ var db *sql.DB
 
 func main() {
     var err error
-    db, err = sql.Open("sqlite3", "./BDD/accounts.db")
+    db, err = sql.Open("sqlite3", "../BDD/accounts.db")
     if err != nil {
         panic(err)
     }
