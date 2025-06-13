@@ -23,11 +23,11 @@ func CreatePost() {
 	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
 	defer database.Close()
 
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, title TEXT, content TEXT, author TEXT)")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, author INTEGER, title TEXT, content TEXT, image TEXT)")
 	statement.Exec()
 
 	statement, _ = database.Prepare("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)")
-	statement.Exec("First Post", "This is the content of the first post.", "John Doe")
+	statement.Exec("First Post", "This is the content of the first post.", "1 ")
 
 	fmt.Println("Post loaded successfully.")
 }
