@@ -76,14 +76,31 @@
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({username, password, email})
-    });
-    if (res.ok) {
-      window.location.href = '/Login/login.html';
-    } else {
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (password !== confirmPassword) {
+      alert('Les mots de passe ne correspondent pas.');
+      return;
+    }
+
+    console.log('Envoi des données:', { username, email });
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password, email})
+      });
+
+      if (res.ok) {
+        window.location.href = '/Login/login.html';
+      } else {
+        const errorData = await res.text();
+        console.error('Erreur serveur:', errorData);
+        alert(errorData);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
       alert('Erreur lors de l\'inscription');
     }
   });
