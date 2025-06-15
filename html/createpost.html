@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Créer un Post</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1b;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 40px;
+      background-color: #272729;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    font-size: 1.8rem;
+    color: white;
+    background-color: #FF4500;
+    padding: 8px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .back-arrow:hover {
+    background-color: #e03e00;
+    }
+
+    .back-arrow i {
+    display: inline-block;
+    width: 24px;  
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    position: relative;
+    top: -6px;
+    right: 3px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      background-color: #1a1a1b;
+      color: white;
+      border: 1px solid #555;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #FF4500;
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+      height: 150px;
+    }
+
+    input[type="submit"] {
+      background-color: #FF4500;
+      color: white;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #cc3700;
+    }
+
+    input[type="file"] {
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    background-color: #1a1a1b;
+    color: white;
+    border: 1px solid #555;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    cursor: pointer;
+    }
+
+    input[type="file"]:focus {
+    border-color: #FF4500;
+    outline: none;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+    background-color: #FF4500;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #cc3700;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="/html/home copy.html" class="back-arrow">
+  <i>&#8592;</i>
+</a>
+
+  <h1>Créer un nouveau post</h1>
+
+  <form action="/createpost" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">Titre :</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+
+    <div class="form-group">
+    <label for="content">Image :</label>
+    <input type="file" id="content" name="content" accept="image/*" required>
+    <img id="preview" src="#" alt="Aperçu de l'image" 
+    style="display:none; margin-top: 20px; max-width:400px; width:100%; height:auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+    </div>
+
+    <div class="form-group">
+      <label for="author">Auteur :</label>
+      <input type="text" id="author" name="author" required>
+    </div>
+
+    <input type="submit" value="Publier">
+  </form>
+</div>
+<script>
+document.getElementById("content").addEventListener("change", function(event) {
+  const file = event.target.files[0];
+  const preview = document.getElementById("preview");
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    }
+    reader.readAsDataURL(file);
+  } else {
+    preview.src = "#";
+    preview.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>
