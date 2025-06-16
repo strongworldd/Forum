@@ -29,6 +29,8 @@ func main() {
 	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
 	http.HandleFunc("/deletepost", tables.Deletepost)
 	http.HandleFunc("/api/me", getuserdata)
+	http.HandleFunc("/api/comment", commentHandler)      // Ajout pour poster un commentaire
+	http.HandleFunc("/api/comments", commentsAPIHandler) // Ajout pour récupérer les commentaires d'un post
 
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
@@ -114,24 +116,107 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getuserdata(w http.ResponseWriter, r *http.Request) {
-    cookie, err := r.Cookie("sessionid")
-    if err != nil {
-        http.Error(w, "Non authentifié", http.StatusUnauthorized)
-        return
-    }
-    userID, err := strconv.Atoi(cookie.Value)
-    if err != nil {
-        http.Error(w, "Session invalide", http.StatusUnauthorized)
-        return
-    }
-	
-    user, err := tables.GetUserByID(userID)
-    if err != nil {
-        http.Error(w, "Utilisateur inconnu", http.StatusNotFound)
-        return
-    }
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(user)
+	cookie, err := r.Cookie("sessionid")
+	if err != nil {
+		http.Error(w, "Non authentifié", http.StatusUnauthorized)
+		return
+	}
+	userID, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		http.Error(w, "Session invalide", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := tables.GetUserByID(userID)
+	if err != nil {
+		http.Error(w, "Utilisateur inconnu", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
+
+func commentHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+	cookie, err := r.Cookie("sessionid")
+	if err != nil {
+		http.Error(w, "Non authentifié", http.StatusUnauthorized)
+		return
+	}
+	userID, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		http.Error(w, "Session invalide", http.StatusUnauthorized)
+		return
+	}
+	var data struct {
+		PostID  int    `json:"post_id"`
+		Content string `json:"content"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
+		return
+	}
+	// Récupérer le nom d'utilisateur
+	username, err := tables.GetUsernameByID(userID)
+	if err != nil {
+		http.Error(w, "Utilisateur inconnu", http.StatusInternalServerError)
+		return
+	}
+	dbPosts, err := sql.Open("sqlite3", "../BDD/posts.db")
+	if err != nil {
+		http.Error(w, "Erreur BDD", 500)
+		return
+	}
+	defer dbPosts.Close()
+	stmt, err := dbPosts.Prepare("INSERT INTO comments (post_id, author, content) VALUES (?, ?, ?)")
+	if err != nil {
+		http.Error(w, "Erreur préparation", 500)
+		return
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(data.PostID, username, data.Content)
+	if err != nil {
+		http.Error(w, "Erreur insertion", 500)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func commentsAPIHandler(w http.ResponseWriter, r *http.Request) {
+	postIDStr := r.URL.Query().Get("post_id")
+	postID, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		http.Error(w, "Paramètre post_id invalide", http.StatusBadRequest)
+		return
+	}
+	dbPosts, err := sql.Open("sqlite3", "../BDD/posts.db")
+	if err != nil {
+		http.Error(w, "Erreur BDD", 500)
+		return
+	}
+	defer dbPosts.Close()
+	rows, err := dbPosts.Query("SELECT id, author, content FROM comments WHERE post_id = ? ORDER BY id ASC", postID)
+	if err != nil {
+		http.Error(w, "Erreur lecture BDD", 500)
+		return
+	}
+	defer rows.Close()
+	type Comment struct {
+		ID      int    `json:"id"`
+		Author  string `json:"author"`
+		Content string `json:"content"`
+	}
+	var comments []Comment
+	for rows.Next() {
+		var c Comment
+		rows.Scan(&c.ID, &c.Author, &c.Content)
+		comments = append(comments, c)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comments)
 }
 
 func createPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -141,12 +226,11 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie, err := r.Cookie("sessionid")
-    if err != nil {
-        http.Error(w, "Non authentifié", http.StatusUnauthorized)
-        return
-    }
-    author, _ := strconv.Atoi(cookie.Value)
-
+	if err != nil {
+		http.Error(w, "Non authentifié", http.StatusUnauthorized)
+		return
+	}
+	author, _ := strconv.Atoi(cookie.Value)
 	title := r.FormValue("title")
 
 	// On récupère le fichier image
@@ -178,18 +262,10 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/html/home copy.html", http.StatusSeeOther)
-
-	rows, _ := dbPosts.Query("SELECT id FROM posts")
-
+	// Récupérer le dernier ID inséré
 	var postID int
-	for rows.Next() {
-		err = rows.Scan(&postID)
-		if err != nil {
-			http.Error(w, "Erreur lecture ID post", http.StatusInternalServerError)
-			return
-		}
-	}
+	row := dbPosts.QueryRow("SELECT last_insert_rowid()")
+	row.Scan(&postID)
 
 	filename := "post" + strconv.Itoa(postID) + ".jpg"
 
@@ -205,6 +281,7 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// On met à jour le chemin de l'image dans la BDD
 	_, _ = dbPosts.Exec("UPDATE posts SET content = ? WHERE id = ?", filename, postID)
+	http.Redirect(w, r, "/html/home copy.html", http.StatusSeeOther)
 }
 
 func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
@@ -223,7 +300,7 @@ func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type Post struct {
-		ID 		int `json:"id"`
+		ID      int    `json:"id"`
 		Title   string `json:"title"`
 		Content string `json:"content"`
 		Author  string `json:"author"`
