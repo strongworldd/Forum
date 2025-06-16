@@ -75,7 +75,11 @@ body {
 }
 
 .post-header .dot {
-    margin: 0 0.3rem;
+    color: #ffffff;
+}
+
+.post-header .autor {
+    color: #ffffff;
 }
 
 .post-header > *:not(:last-child) {

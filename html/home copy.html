@@ -125,7 +125,7 @@
         .then(user => {
           // Sélectionne le span.username dans la sidebar
           const usernameSpan = document.querySelector('.sidebar-left .popular-btn .username');
-          if (usernameSpan) usernameSpan.textContent = user.username;
+          if (usernameSpan) usernameSpan.textContent = user.username; console.log(user.username);
         });
     });
   </script>
@@ -146,7 +146,7 @@
             <div class="post-header">
               <span class="subreddit">r/france</span>
               <span class="dot">•</span>
-              <span class="time">il y a ...</span>
+              <span class="autor">${post.author}</span>
               <button class="delete-btn" data-id="${post.id}">🗑️</button>
             </div>
             <h2 class="title">${post.title}</h2>
@@ -154,11 +154,8 @@
               <img src="/img/${post.content}" alt="Image du post" />
             </div>
             <div class="actions">
-              <button class="action-btn">↗</button>
               <button class="action-btn">💬</button>
-              <button class="action-btn">💾</button>
             </div>
-            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
           </div>
         `;
         postDiv.querySelector('.delete-btn').addEventListener('click', function() {

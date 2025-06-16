@@ -78,6 +78,15 @@ func GetUserByID(id int) (*User, error) {
     return &user, nil
 }
 
+func GetUsernameByID(id int) (string, error) {
+	user, err := GetUserByID(id)
+	if err != nil {
+		fmt.Println("Error fetching user:", err)
+		return "", err
+	}
+	return user.Username, nil
+}
+
 func (repo *UserRepository) ListAllUsernames() ([]string, error) {
 	rows, err := repo.DB.Query(`SELECT name FROM people`)
 	if err != nil {

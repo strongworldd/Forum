@@ -128,7 +128,7 @@
             <div class="post-header">
               <span class="subreddit">r/france</span>
               <span class="dot">•</span>
-              <span class="time">il y a ...</span>
+              <span class="autor">${post.author}</span>
               <button class="delete-btn">🗑️</button>
             </div>
             <h2 class="title">${post.title}</h2>
@@ -136,11 +136,8 @@
               <img src="/img/${post.content}" alt="Image du post" />
             </div>
             <div class="actions">
-              <button class="action-btn">↗</button>
               <button class="action-btn">💬</button>
-              <button class="action-btn">💾</button>
             </div>
-            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
           </div>
         `;
         container.appendChild(postDiv);
