@@ -147,31 +147,56 @@
               <span class="subreddit">r/france</span>
               <span class="dot">•</span>
               <span class="autor">${post.author}</span>
-              <button class="delete-btn" data-id="${post.id}">🗑️</button>
             </div>
             <h2 class="title">${post.title}</h2>
             <div class="image-wrapper">
               <img src="/img/${post.content}" alt="Image du post" />
             </div>
             <div class="actions">
-              <button class="action-btn">💬</button>
+              <button class="action-btn" id="comments">💬</button>
             </div>
           </div>
         `;
-        postDiv.querySelector('.delete-btn').addEventListener('click', function() {
-          const postId = this.getAttribute('data-id');
-          fetch('/deletepost', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: Number(postId) })
-          }).then(res => {
-            if (res.ok) {
-              postDiv.remove();
-            } else {
-              alert('Erreur lors de la suppression');
+        fetch('/api/me')
+          .then(res => res.json())
+          .then(user => {
+          if (post.author === user.username) {
+            const postHeaderDiv = postDiv.querySelector('.post-header');
+            console.log(postHeaderDiv);
+            const btn = document.createElement('button');
+            btn.className = 'delete-btn';
+            btn.setAttribute('data-id', post.id);
+            btn.innerText = '🗑️';
+            postHeaderDiv.appendChild(btn);
+            postDiv.querySelector('.delete-btn').addEventListener('click', function() {
+            const postId = this.getAttribute('data-id');
+            fetch('/deletepost', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: Number(postId) })
+            }).then(res => {
+              if (res.ok) {
+                postDiv.remove();
+              } else {
+                alert('Erreur lors de la suppression');
+              }
+            });
+            });
+            const style = document.createElement('style');
+            style.textContent = `
+              .post-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 0.8rem;
+                color: #8a8b8d;
+                margin-bottom: 0.4rem;
+              }
+            `;
+            document.head.appendChild(style);
             }
           });
-        });
+        
         container.appendChild(postDiv);
       });
     }
