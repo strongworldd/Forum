@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	//"strconv"
-	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
+	_ "github.com/mattn/go-sqlite3" 
 )
 
 func ResetPostsTable() {

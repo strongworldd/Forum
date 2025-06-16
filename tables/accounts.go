@@ -25,7 +25,6 @@ func CheckAccountDB() {
 	database, _ := sql.Open("sqlite3", "./BDD/accounts.db")
 	defer database.Close()
 
-	// On uniformise bien la structure ici :
 	statement, _ := database.Prepare(`CREATE TABLE IF NOT EXISTS people (
 		id INTEGER PRIMARY KEY, 
 		name TEXT, 

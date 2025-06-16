@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/api/register", registerHandler)
 	http.HandleFunc("/api/login", loginHandler)
 	http.HandleFunc("/createpost", createPostHandler)
-	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
+	http.HandleFunc("/api/posts", postsAPIHandler)
 
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
@@ -106,7 +106,6 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	author := r.FormValue("author")
 
-	// On récupère le fichier image
 	file, handler, err := r.FormFile("content")
 	if err != nil {
 		http.Error(w, "Erreur fichier", http.StatusBadRequest)
@@ -114,7 +113,6 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// On sauve le fichier dans le dossier img/
 	imgPath := "../img/" + handler.Filename
 	dst, err := os.Create(imgPath)
 	if err != nil {
@@ -124,7 +122,6 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer dst.Close()
 	io.Copy(dst, file)
 
-	// On enregistre le chemin de l'image dans la BDD
 	dbPosts, err := sql.Open("sqlite3", "../BDD/posts.db")
 	if err != nil {
 		http.Error(w, "Erreur BDD", 500)
