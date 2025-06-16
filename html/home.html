@@ -39,26 +39,10 @@
     </div>
 
     <div class="feed">
-      <article class="post">
-        <div class="content">
-          <div class="post-header">
-            <span class="subreddit">r/france</span>
-            <span class="dot">•</span>
-            <span class="time">il y a 15 h</span>
-          </div>
-          <h2 class="title">
-            Le compte Twitter de Valeurs actuelles annonce Hanouna candidat pour 2027
-          </h2>
-          <div class="image-wrapper">
-            <img src="/img/ug4pl8obklxe1.jpeg" alt="Couverture Valeurs actuelles" />
-          </div>
-          <div class="actions">
-            <button class="action-btn">↗ 10</button>
-            <button class="action-btn">💬 45</button>
-            <button class="action-btn">💾</button>
-          </div>
-        </div>
-      </article>
+      <!-- Bouton création de post -->
+      <div id="postsContainer">
+        <!-- Les posts s’affichent ici dynamiquement -->
+      </div>
     </div>
       <div class="widget popular-communities">
         <h3>Communautés<br>Populaires</h3>
@@ -130,6 +114,45 @@
       document.querySelector('.btn.login').addEventListener('click', function() {
         window.location.href = '/Login/login.html';
       });
+  </script>
+  <script>
+    function renderPosts(posts) {
+      const container = document.getElementById('postsContainer');
+      container.innerHTML = '';
+      posts.forEach(post => {
+        const postDiv = document.createElement('article');
+        postDiv.className = 'post';
+        postDiv.innerHTML = `
+          <div class="content">
+            <div class="post-header">
+              <span class="subreddit">r/france</span>
+              <span class="dot">•</span>
+              <span class="time">il y a ...</span>
+            </div>
+            <h2 class="title">${post.title}</h2>
+            <div class="image-wrapper">
+              <img src="/img/${post.content}" alt="Image du post" />
+            </div>
+            <div class="actions">
+              <button class="action-btn">↗</button>
+              <button class="action-btn">💬</button>
+              <button class="action-btn">💾</button>
+            </div>
+            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
+          </div>
+        `;
+        container.appendChild(postDiv);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      fetch('/api/posts')
+        .then(response => response.json())
+        .then(posts => renderPosts(posts))
+        .catch(err => {
+          document.getElementById('postsContainer').innerText = 'Erreur lors du chargement des posts.';
+        });
+    });
   </script>
 </body>
 </html>

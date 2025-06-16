@@ -1,0 +1,30 @@
+<div id="mainContent">
+    <button id="addPostBtn">+ Créer un post</button>
+    <div id="postsContainer">
+        <!-- Les posts s’affichent ici -->
+    </div>
+</div>
+<script>
+// Exemple d'appel AJAX pour récupérer tous les posts
+window.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/posts') // Adaptez l'URL selon votre backend
+        .then(response => response.json())
+        .then(posts => {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+            posts.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    <small>Posté par ${post.author}</small>
+                `;
+                container.appendChild(postDiv);
+            });
+        })
+        .catch(err => {
+            document.getElementById('postsContainer').innerText = 'Erreur lors du chargement des posts.';
+        });
+});
+</script>

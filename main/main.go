@@ -1,98 +1,100 @@
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "net/http"
-    "forum/tables"
-    "database/sql"
-    _ "github.com/mattn/go-sqlite3"
-    "io"
-    "os"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"forum/tables"
+	"io"
+	"net/http"
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
 
 func main() {
-    var err error
-    db, err = sql.Open("sqlite3", "../BDD/accounts.db")
-    if err != nil {
-        panic(err)
-    }
-    defer db.Close()
+	var err error
+	db, err = sql.Open("sqlite3", "../BDD/accounts.db")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
 
-    http.HandleFunc("/api/register", registerHandler)
-    http.HandleFunc("/api/login", loginHandler)
-    http.HandleFunc("/createpost", createPostHandler)
+	http.HandleFunc("/api/register", registerHandler)
+	http.HandleFunc("/api/login", loginHandler)
+	http.HandleFunc("/createpost", createPostHandler)
+	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
 
-    http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
-    http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
-    http.Handle("/Login/", http.StripPrefix("/Login/", http.FileServer(http.Dir("../Login"))))
-    http.Handle("/html/", http.StripPrefix("/html/", http.FileServer(http.Dir("../html"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
+	http.Handle("/Login/", http.StripPrefix("/Login/", http.FileServer(http.Dir("../Login"))))
+	http.Handle("/html/", http.StripPrefix("/html/", http.FileServer(http.Dir("../html"))))
 
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        if r.URL.Path == "/" {
-            http.Redirect(w, r, "/html/home.html", http.StatusFound)
-            return
-        }
-        http.NotFound(w, r)
-    })
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/html/home.html", http.StatusFound)
+			return
+		}
+		http.NotFound(w, r)
+	})
 
-    fmt.Println("Serveur démarré sur : http://localhost:8080")
-    http.ListenAndServe(":8080", nil)
+	fmt.Println("Serveur démarré sur : http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
-        return
-    }
-    var data struct {
-        Username string `json:"username"`
-        Password string `json:"password"`
-        Email    string `json:"email"`
-    }
-    json.NewDecoder(r.Body).Decode(&data)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+	var data struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Email    string `json:"email"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
 
-    hashedPassword, err := tables.HashPassword(data.Password)
-    if err != nil {
-        http.Error(w, "Erreur de hash du mot de passe", 500)
-        return
-    }
+	hashedPassword, err := tables.HashPassword(data.Password)
+	if err != nil {
+		http.Error(w, "Erreur de hash du mot de passe", 500)
+		return
+	}
 
-    err = tables.NewUserRepository(db).CreateUser(data.Username, hashedPassword, data.Email)
-    if err != nil {
-        http.Error(w, "Erreur création utilisateur", 500)
-        return
-    }
-    w.WriteHeader(http.StatusOK)
-    fmt.Fprint(w, "ok")
+	err = tables.NewUserRepository(db).CreateUser(data.Username, hashedPassword, data.Email)
+	if err != nil {
+		http.Error(w, "Erreur création utilisateur", 500)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "ok")
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
-        return
-    }
-    var data struct {
-        Username string `json:"username"`
-        Password string `json:"password"`
-    }
-    json.NewDecoder(r.Body).Decode(&data)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+	var data struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
 
-    repo := tables.NewUserRepository(db)
-    hash, err := repo.GetPasswordByUsername(data.Username)
-        if err != nil || hash == "" {
-            http.Error(w, "Utilisateur inconnu", http.StatusUnauthorized)
-            return
-        }
-        if !tables.ComparePasswords(hash, data.Password) {
-            http.Error(w, "Mot de passe incorrect", http.StatusUnauthorized)
-            return
-        }
+	repo := tables.NewUserRepository(db)
+	hash, err := repo.GetPasswordByUsername(data.Username)
+	if err != nil || hash == "" {
+		http.Error(w, "Utilisateur inconnu", http.StatusUnauthorized)
+		return
+	}
+	if !tables.ComparePasswords(hash, data.Password) {
+		http.Error(w, "Mot de passe incorrect", http.StatusUnauthorized)
+		return
+	}
 
-    w.WriteHeader(http.StatusOK)
-    fmt.Fprint(w, "ok")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "ok")
 }
 
 func createPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -146,32 +148,32 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/html/home copy.html", http.StatusSeeOther)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    db, err := sql.Open("sqlite3", "./BDD/posts.db")
-    if err != nil {
-        http.Error(w, "Erreur BDD", 500)
-        return
-    }
-    defer db.Close()
+func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
+	dbPosts, err := sql.Open("sqlite3", "../BDD/posts.db")
+	if err != nil {
+		http.Error(w, "Erreur BDD", 500)
+		return
+	}
+	defer dbPosts.Close()
 
-    rows, err := db.Query("SELECT title, content, author FROM posts ORDER BY id DESC")
-    if err != nil {
-        http.Error(w, "Erreur lecture BDD", 500)
-        return
-    }
-    defer rows.Close()
+	rows, err := dbPosts.Query("SELECT title, content, author FROM posts ORDER BY id DESC")
+	if err != nil {
+		http.Error(w, "Erreur lecture BDD", 500)
+		return
+	}
+	defer rows.Close()
 
-    html := `<!DOCTYPE html>
-    <html><head><title>Accueil</title></head><body><h1>Posts :</h1>`
-
-    for rows.Next() {
-        var title, content, author string
-        rows.Scan(&title, &content, &author)
-
-        html += fmt.Sprintf("<div><h2>%s</h2><img src='/img/%s' width='300'><p>Auteur : %s</p></div>", title, content, author)
-    }
-    
-    html += `</body></html>`
-
-    w.Write([]byte(html))
+	type Post struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+		Author  string `json:"author"`
+	}
+	var posts []Post
+	for rows.Next() {
+		var p Post
+		rows.Scan(&p.Title, &p.Content, &p.Author)
+		posts = append(posts, p)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }
