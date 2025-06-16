@@ -7,6 +7,102 @@
   <link rel="stylesheet" href="/css/topbar.css" />
   <link rel="stylesheet" href="/css/home.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <style>
+    .post-options {
+      position: relative;
+      display: inline-block;
+      z-index: 10;
+    }
+
+    .options-btn {
+      background: none;
+      border: none;
+      color: #8a8b8d;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+    }
+
+    .options-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #1a1a1b;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 100;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+
+    .options-menu.show {
+      display: block;
+    }
+
+    .options-menu button {
+      color: #d7dadc;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .options-menu button:hover {
+      background-color: #2a2a2a;
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Styles pour les votes */
+    .vote-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .vote-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+      color: #8a8b8d;
+      transition: color 0.2s;
+    }
+
+    .vote-btn:hover {
+      color: #ff4500;
+    }
+
+    .vote-btn.downvote:hover {
+      color: #7193ff;
+    }
+
+    .vote-btn.active {
+      color: #ff4500;
+    }
+
+    .vote-btn.downvote.active {
+      color: #7193ff;
+    }
+
+    .vote-count {
+      font-size: 0.9rem;
+      color: #8a8b8d;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -22,7 +118,7 @@
         </form>
       </div>
       <div class="right">
-        <button class="btn download">Télécharger l’appli</button>
+        <button class="btn download">Télécharger l'appli</button>
         <button class="btn login">Se connecter</button>
         <button class="btn avatar">⋯</button>
       </div>
@@ -41,7 +137,7 @@
     <div class="feed">
       <!-- Bouton création de post -->
       <div id="postsContainer">
-        <!-- Les posts s’affichent ici dynamiquement -->
+        <!-- Les posts s'affichent ici dynamiquement -->
       </div>
     </div>
       <div class="widget popular-communities">
@@ -116,6 +212,76 @@
       });
   </script>
   <script>
+    // Fonction pour vérifier si l'utilisateur est connecté
+    function isUserLoggedIn() {
+      return localStorage.getItem('username') !== null;
+    }
+
+    // Fonction pour obtenir le nom d'utilisateur
+    function getUsername() {
+      return localStorage.getItem('username');
+    }
+
+    // Fonction pour mettre à jour l'interface en fonction de l'état de connexion
+    function updateLoginButton() {
+      const loginBtn = document.querySelector('.btn.login');
+      if (isUserLoggedIn()) {
+        loginBtn.textContent = 'Se déconnecter';
+        loginBtn.addEventListener('click', function() {
+          localStorage.removeItem('username');
+          window.location.reload();
+        });
+      } else {
+        loginBtn.textContent = 'Se connecter';
+        loginBtn.addEventListener('click', function() {
+          window.location.href = '/Login/login.html';
+        });
+      }
+    }
+
+    // Appeler updateLoginButton au chargement de la page
+    updateLoginButton();
+
+    // Fonction pour charger les votes de l'utilisateur
+    function loadUserVotes() {
+      if (!isUserLoggedIn()) return;
+
+      fetch('/api/posts/votes', {
+        headers: {
+          'X-Username': getUsername()
+        }
+      })
+      .then(response => response.json())
+      .then(votes => {
+        // Mettre à jour l'interface avec les votes de l'utilisateur
+        Object.entries(votes).forEach(([title, voteData]) => {
+          const postElement = Array.from(document.querySelectorAll('.post')).find(
+            post => post.querySelector('.title').textContent === title
+          );
+          if (postElement) {
+            const upvoteBtn = postElement.querySelector('.upvote');
+            const downvoteBtn = postElement.querySelector('.downvote');
+            const voteCount = postElement.querySelector('.vote-count');
+            
+            // Mettre à jour le compteur
+            if (voteData.count !== undefined) {
+              voteCount.textContent = voteData.count;
+            }
+            
+            // Mettre à jour les boutons
+            if (voteData.userVote === 1) {
+              upvoteBtn.classList.add('active');
+            } else if (voteData.userVote === -1) {
+              downvoteBtn.classList.add('active');
+            }
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Erreur lors du chargement des votes:', error);
+      });
+    }
+
     function renderPosts(posts) {
       const container = document.getElementById('postsContainer');
       container.innerHTML = '';
@@ -125,9 +291,18 @@
         postDiv.innerHTML = `
           <div class="content">
             <div class="post-header">
-              <span class="subreddit">r/france</span>
-              <span class="dot">•</span>
-              <span class="time">il y a ...</span>
+              <div>
+                <span class="subreddit">r/france</span>
+                <span class="dot">•</span>
+                <span class="time">il y a ...</span>
+              </div>
+              <div class="post-options">
+                <button class="options-btn">⋯</button>
+                <div class="options-menu">
+                  <button onclick="editPost('${post.title}', '${post.content}', '${post.author}')">Modifier</button>
+                  <button onclick="deletePost('${post.title}', '${post.author}')">Supprimer</button>
+                </div>
+              </div>
             </div>
             <h2 class="title">${post.title}</h2>
             <div class="image-wrapper">
@@ -138,17 +313,147 @@
               <button class="action-btn">💬</button>
               <button class="action-btn">💾</button>
             </div>
+            <div class="vote-container">
+              <button class="vote-btn upvote" onclick="handleVote('${post.title}', '${post.author}', 'up')">▲</button>
+              <span class="vote-count" data-post-title="${post.title}">0</span>
+              <button class="vote-btn downvote" onclick="handleVote('${post.title}', '${post.author}', 'down')">▼</button>
+            </div>
             <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
           </div>
         `;
         container.appendChild(postDiv);
+
+        // Ajouter les event listeners pour le menu d'options
+        const optionsBtn = postDiv.querySelector('.options-btn');
+        const optionsMenu = postDiv.querySelector('.options-menu');
+        
+        optionsBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          optionsMenu.classList.toggle('show');
+        });
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', () => {
+          optionsMenu.classList.remove('show');
+        });
+      });
+
+      // Charger les votes pour chaque post
+      if (isUserLoggedIn()) {
+        loadUserVotes();
+      }
+    }
+
+    function handleVote(title, author, voteType) {
+      if (!isUserLoggedIn()) {
+        window.location.href = '/Login/login.html';
+        return;
+      }
+
+      fetch('/api/posts/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Username': getUsername()
+        },
+        body: JSON.stringify({
+          title: title,
+          author: author,
+          voteType: voteType === 'up' ? 1 : -1
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          // Mettre à jour l'interface
+          const postElement = Array.from(document.querySelectorAll('.post')).find(
+            post => post.querySelector('.title').textContent === title
+          );
+          if (postElement) {
+            const upvoteBtn = postElement.querySelector('.upvote');
+            const downvoteBtn = postElement.querySelector('.downvote');
+            const voteCount = postElement.querySelector('.vote-count');
+            
+            // Réinitialiser les classes
+            upvoteBtn.classList.remove('active');
+            downvoteBtn.classList.remove('active');
+            
+            // Mettre à jour selon le vote
+            if (data.voteType === 1) {
+              upvoteBtn.classList.add('active');
+            } else if (data.voteType === -1) {
+              downvoteBtn.classList.add('active');
+            }
+            
+            // Mettre à jour le compteur
+            if (data.voteCount !== undefined) {
+              voteCount.textContent = data.voteCount;
+            }
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Erreur:', error);
       });
     }
 
+    function editPost(title, content, author) {
+      if (!isUserLoggedIn() || getUsername() !== author) {
+        alert('Vous n\'êtes pas autorisé à modifier ce post');
+        return;
+      }
+      // Rediriger vers la page de modification
+      window.location.href = `/html/editpost.html?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`;
+    }
+
+    function deletePost(title, author) {
+      if (!isUserLoggedIn() || getUsername() !== author) {
+        alert('Vous n\'êtes pas autorisé à supprimer ce post');
+        return;
+      }
+
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
+        fetch('/api/posts/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Username': getUsername()
+          },
+          body: JSON.stringify({
+            title: title,
+            author: author
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+            // Recharger les posts
+            fetch('/api/posts')
+              .then(response => response.json())
+              .then(posts => renderPosts(posts))
+              .catch(err => {
+                console.error('Erreur lors du rechargement des posts:', err);
+              });
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          alert('Une erreur est survenue lors de la suppression du post');
+        });
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
+      updateLoginButton();
       fetch('/api/posts')
         .then(response => response.json())
-        .then(posts => renderPosts(posts))
+        .then(posts => {
+          renderPosts(posts);
+          if (isUserLoggedIn()) {
+            loadUserVotes();
+          }
+        })
         .catch(err => {
           document.getElementById('postsContainer').innerText = 'Erreur lors du chargement des posts.';
         });

@@ -64,7 +64,8 @@
       body: JSON.stringify({username, password})
     });
     if (res.ok) {
-      window.location.href = '/html/home copy.html';
+      localStorage.setItem('username', username);
+      window.location.href = '/html/home.html';
     } else {
       alert('Identifiants incorrects');
     }

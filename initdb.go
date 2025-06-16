@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -49,6 +50,21 @@ func initPostsDB() {
 		author TEXT
 	);`
 	_, err = db.Exec(statement)
+	if err != nil {
+		panic(err)
+	}
+
+	// Création de la table votes
+	votesStatement := `
+	CREATE TABLE IF NOT EXISTS votes (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		post_id INTEGER,
+		username TEXT,
+		vote_type INTEGER,
+		FOREIGN KEY (post_id) REFERENCES posts(id),
+		UNIQUE(post_id, username)
+	);`
+	_, err = db.Exec(votesStatement)
 	if err != nil {
 		panic(err)
 	}
