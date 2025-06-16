@@ -3,24 +3,68 @@ package tables
 import (
 	"database/sql"
 	"fmt"
-	//"strconv"
 	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
+    "os"
+    "net/http"
+    "encoding/json"
 )
 
 func ResetPostsTable() {
-	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	database, _ := sql.Open("sqlite3", "../BDD/posts.db")
     defer database.Close()
     _, _ = database.Exec("DELETE FROM posts")
 }
 
-func Deletepost(id int) {
-	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+func Deletepost(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+        return
+    }
+    var data struct {
+        ID int `json:"id"`
+    }
+    err := json.NewDecoder(r.Body).Decode(&data)
+    if err != nil {
+        http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
+        return
+    }
+    id := data.ID
+	database, err := sql.Open("sqlite3", "../BDD/posts.db")
+    if err != nil {
+        fmt.Println("Erreur ouverture BDD:", err)
+        return
+    }
     defer database.Close()
-    _, _ = database.Exec("DELETE FROM posts WHERE id = ?", id)
+
+    rows, err := database.Query("SELECT content FROM posts WHERE id = ?", id)
+
+    if err != nil {
+        fmt.Println("Erreur récupération images post:", err)
+    } else {
+        var image string
+        for rows.Next() {
+            err = rows.Scan(&image)
+            if err != nil {
+                fmt.Println("Erreur scan image:", err)
+                return
+            }
+        }
+
+        err := os.Remove("../img/" + image)
+        if err != nil {
+            fmt.Println("Erreur suppression image:", err)
+        }
+        rows.Close()
+    }
+
+    _, err = database.Exec("DELETE FROM posts WHERE id = ?", id)
+    if err != nil {
+        fmt.Println("Erreur suppression post:", err)
+    }
 }
 
 func CreatePost() {
-	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	database, _ := sql.Open("sqlite3", "../BDD/posts.db")
 	defer database.Close()
 
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, title TEXT, content TEXT, author TEXT)")
@@ -31,7 +75,7 @@ func CreatePost() {
 }
 
 func CheckPostDB() {
-	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	database, _ := sql.Open("sqlite3", "../BDD/posts.db")
 	defer database.Close()
 
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, title TEXT, content TEXT, author TEXT)")
@@ -39,7 +83,7 @@ func CheckPostDB() {
 }
 
 func LoadPosts() {
-	database, _ := sql.Open("sqlite3", "./BDD/posts.db")
+	database, _ := sql.Open("sqlite3", "../BDD/posts.db")
 	defer database.Close()
 
 	rows, _ := database.Query("SELECT id, title, content, author FROM posts")
