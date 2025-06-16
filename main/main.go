@@ -28,6 +28,7 @@ func main() {
 	http.HandleFunc("/createpost", createPostHandler)
 	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
 	http.HandleFunc("/deletepost", tables.Deletepost)
+	http.HandleFunc("/api/me", getuserdata)
 
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
@@ -95,8 +96,41 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	id, err := repo.GetUserID(data.Username)
+	if err != nil || id == 0 {
+		http.Error(w, "Erreur récupération ID utilisateur", http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "sessionid",
+		Value:    strconv.Itoa(id), // par exemple un UUID
+		Path:     "/",
+		HttpOnly: true,
+	})
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "ok")
+}
+
+func getuserdata(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("sessionid")
+    if err != nil {
+        http.Error(w, "Non authentifié", http.StatusUnauthorized)
+        return
+    }
+    userID, err := strconv.Atoi(cookie.Value)
+    if err != nil {
+        http.Error(w, "Session invalide", http.StatusUnauthorized)
+        return
+    }
+    user, err := tables.GetUserByID(userID)
+    if err != nil {
+        http.Error(w, "Utilisateur inconnu", http.StatusNotFound)
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(user)
 }
 
 func createPostHandler(w http.ResponseWriter, r *http.Request) {

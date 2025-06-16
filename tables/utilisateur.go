@@ -4,10 +4,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+type User struct {
+    ID       int    `json:"id"`
+    Username string `json:"username"`
+    Email    string `json:"email"`
+}
 
 type UserRepository struct {
 	DB *sql.DB
@@ -57,6 +62,20 @@ func (repo *UserRepository) GetUserID(name string) (int, error) {
 		return 0, fmt.Errorf("failed to query user id: %w", err)
 	}
 	return userID, nil
+}
+
+func GetUserByID(id int) (*User, error) {
+	database, _ := sql.Open("sqlite3", "../BDD/accounts.db")
+    defer database.Close()
+
+    row := database.QueryRow("SELECT id, name, email FROM people WHERE id = ?", id)
+    var user User
+    err := row.Scan(&user.ID, &user.Username, &user.Email)
+    if err != nil {
+		fmt.Println("Error fetching user:", err)
+        return nil, err
+    }
+    return &user, nil
 }
 
 func (repo *UserRepository) ListAllUsernames() ([]string, error) {

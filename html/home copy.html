@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panddit Clone</title>
+  <title>Panddit Connected</title>
+  <link rel="shortcut icon" type="image/png" href="/img/panddit.png"/>
   <link rel="stylesheet" href="/css/topbar.css" />
   <link rel="stylesheet" href="/css/home.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
@@ -95,26 +96,38 @@
     </div>
 
   <script>
-    fetch('sidebar copy.html')
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('sidebar-container').innerHTML = html;
-        document.querySelectorAll('.sidebar-left .collapse-btn').forEach(btn => {
-          btn.addEventListener('click', () =>
-            btn.parentElement.classList.toggle('open')
-          );
-        });
-  
-        const menuBtn = document.querySelector('.menu-btn');
-        const sidebar = document.querySelector('.sidebar-left');
-        const mainContainer = document.querySelector('.container.main');
+  fetch('sidebar copy.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('sidebar-container').innerHTML = html;
+      document.querySelectorAll('.sidebar-left .collapse-btn').forEach(btn => {
+        btn.addEventListener('click', () =>
+          btn.parentElement.classList.toggle('open')
+        );
+      });
 
-        menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContainer.classList.toggle('shifted');
-            menuBtn.classList.toggle('menu-btn-shifted');
+      const menuBtn = document.querySelector('.menu-btn');
+      const sidebar = document.querySelector('.sidebar-left');
+      const mainContainer = document.querySelector('.container.main');
+
+      menuBtn.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+          mainContainer.classList.toggle('shifted');
+          menuBtn.classList.toggle('menu-btn-shifted');
+      });
+
+      // --- MODIFICATION ICI ---
+      fetch('/api/me')
+        .then(res => {
+          if (!res.ok) throw new Error("Non connecté");
+          return res.json();
+        })
+        .then(user => {
+          // Sélectionne le span.username dans la sidebar
+          const usernameSpan = document.querySelector('.sidebar-left .popular-btn .username');
+          if (usernameSpan) usernameSpan.textContent = user.username;
         });
-      })
+    });
   </script>
   <script>
   document.querySelector('.btn.login').addEventListener('click', function() {
