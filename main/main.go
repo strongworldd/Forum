@@ -139,8 +139,14 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookie, err := r.Cookie("sessionid")
+    if err != nil {
+        http.Error(w, "Non authentifié", http.StatusUnauthorized)
+        return
+    }
+    author, _ := strconv.Atoi(cookie.Value)
+
 	title := r.FormValue("title")
-	author := r.FormValue("author")
 
 	// On récupère le fichier image
 	file, _, err := r.FormFile("content")
@@ -225,6 +231,13 @@ func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var p Post
 		rows.Scan(&p.ID, &p.Title, &p.Content, &p.Author)
+		id, _ := strconv.Atoi(p.Author)
+		name, err := tables.GetUsernameByID(id)
+		if err != nil {
+			http.Error(w, "Erreur récupération nom d'utilisateur", http.StatusInternalServerError)
+		} else {
+			p.Author = name
+		}
 		posts = append(posts, p)
 	}
 	w.Header().Set("Content-Type", "application/json")
