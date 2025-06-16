@@ -28,16 +28,17 @@ body {
 
 .post {
     display: flex;
-    background: transparent;
+    background: #1a1a1b;
     border-radius: 16px;
     margin-bottom: 1rem;
     overflow: hidden;
     max-width: 750px;
     width: 100%;
+    border: 1px solid #2a2a2a;
 }
 
 .post:hover {
-    background: #2a2a2a;
+    border-color: #3a3a3a;
 }
 
 .content {
@@ -86,39 +87,18 @@ body {
 }
 
 .image-wrapper {
-    position: relative;
-    width: auto;
-    height: 530px;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-    margin: 0 auto;
-    background-image:url('/img/ug4pl8obklxe1.jpeg');
-    border-radius: 16px;
-}
-
-.image-wrapper::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: inherit;
-    background-size: cover;
-    background-position: center;
-    filter: blur(15px);
-    transform: scale(1.1);
-    z-index: 1;
     width: 100%;
-    height: 100%;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1a1a1b;
 }
 
 .image-wrapper img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    max-height: 532px;
-    width: auto;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
 }
 
 .sidebar-toggle {
@@ -284,4 +264,54 @@ body {
 .btn.create-post:hover {
     background-color: #c03300;
     transform: scale(1.05);
+}
+
+.create-post {
+  background: white;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.create-post-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: #0079D3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-post-btn:hover {
+  background: #0061A9;
+}
+
+.no-posts {
+  text-align: center;
+  color: #878A8C;
+  padding: 2rem;
+  background: white;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.create-post-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem; /* Adjust as needed for spacing above posts */
+    padding: 0 1rem; /* Add some horizontal padding if necessary */
+}
+
+.feed .btn.login {
+    padding: 0.8rem 1.5rem; /* Make the button larger */
+    font-size: 1rem;
+    /* The orange color should come from the .btn.login class defined in topbar.css */
+}
+
+.post {
+    background: #1a1a1b !important;
 }

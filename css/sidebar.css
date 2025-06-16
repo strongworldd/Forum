@@ -164,6 +164,39 @@
     color: #ffffff; 
 }
 
+.create-post-btn {
+    margin: 0;
+}
+
+.create-post-btn a {
+    background-color: transparent;
+    color: #d7dadc;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    font-weight: normal;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.create-post-btn a:hover {
+    background-color: #343536;
+    color: #ffffff;
+}
+
+.create-post-btn .icon {
+    filter: none;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
 .sidebar-wrapper {
     position: fixed; 
     top: 4.45rem; 

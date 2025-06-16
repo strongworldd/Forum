@@ -7,100 +7,17 @@
   <link rel="stylesheet" href="/css/topbar.css" />
   <link rel="stylesheet" href="/css/home.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/votes.css" />
   <style>
-    .post-options {
-      position: relative;
-      display: inline-block;
-      z-index: 10;
+    .post {
+      background: #1a1a1b !important;
+      border: 1px solid #2a2a2a !important;
     }
-
-    .options-btn {
-      background: none;
-      border: none;
-      color: #8a8b8d;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 5px;
+    .image-wrapper {
+      background: #1a1a1b !important;
     }
-
-    .options-menu {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: #1a1a1b;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-      z-index: 100;
-      border-radius: 8px;
-      border: 1px solid #333;
-    }
-
-    .options-menu.show {
-      display: block;
-    }
-
-    .options-menu button {
-      color: #d7dadc;
-      padding: 12px 16px;
-      text-decoration: none;
-      display: block;
-      width: 100%;
-      text-align: left;
-      border: none;
-      background: none;
-      cursor: pointer;
-    }
-
-    .options-menu button:hover {
-      background-color: #2a2a2a;
-    }
-
-    .post-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 10;
-    }
-
-    /* Styles pour les votes */
-    .vote-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .vote-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 5px;
-      color: #8a8b8d;
-      transition: color 0.2s;
-    }
-
-    .vote-btn:hover {
-      color: #ff4500;
-    }
-
-    .vote-btn.downvote:hover {
-      color: #7193ff;
-    }
-
-    .vote-btn.active {
-      color: #ff4500;
-    }
-
-    .vote-btn.downvote.active {
-      color: #7193ff;
-    }
-
-    .vote-count {
-      font-size: 0.9rem;
-      color: #8a8b8d;
-      font-weight: bold;
+    .image-wrapper::before {
+      display: none !important;
     }
   </style>
 </head>
@@ -120,7 +37,6 @@
       <div class="right">
         <button class="btn download">Télécharger l'appli</button>
         <button class="btn login">Se connecter</button>
-        <button class="btn avatar">⋯</button>
       </div>
     </div>
   </header>
@@ -135,55 +51,109 @@
     </div>
 
     <div class="feed">
-      <!-- Bouton création de post -->
+      <div class="create-post-button-container">
+        <button id="create-post-btn" class="btn login" onclick="window.location.href='/html/createpost.html'">+ Créer un post</button>
+      </div>
       <div id="postsContainer">
-        <!-- Les posts s'affichent ici dynamiquement -->
+        <article class="post">
+          <div class="content">
+            <div class="post-header">
+              <div>
+                <span class="subreddit">r/france</span>
+                <span class="dot">•</span>
+                <span class="time">il y a 2h</span>
+              </div>
+            </div>
+            <h2 class="title">Bienvenue sur notre forum !</h2>
+            <div class="image-wrapper">
+              <img src="/img/Panda-coucou.png" alt="Image du post" />
+            </div>
+            <div class="actions">
+              <button class="action-btn">↗</button>
+              <button class="action-btn">💬</button>
+              <button class="action-btn">💾</button>
+            </div>
+            <div class="votes">
+              <button class="vote-btn upvote" onclick="handleVote('Bienvenue sur notre forum !', 'admin', 'up')">▲</button>
+              <span class="vote-count">42</span>
+              <button class="vote-btn downvote" onclick="handleVote('Bienvenue sur notre forum !', 'admin', 'down')">▼</button>
+            </div>
+            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : admin</p>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="content">
+            <div class="post-header">
+              <div>
+                <span class="subreddit">r/france</span>
+                <span class="dot">•</span>
+                <span class="time">il y a 5h</span>
+              </div>
+            </div>
+            <h2 class="title">Comment créer un post ?</h2>
+            <div class="image-wrapper">
+              <img src="/img/howto.jpg" alt="Image du post" />
+            </div>
+            <div class="actions">
+              <button class="action-btn">↗</button>
+              <button class="action-btn">💬</button>
+              <button class="action-btn">💾</button>
+            </div>
+            <div class="votes">
+              <button class="vote-btn upvote" onclick="handleVote('Comment créer un post ?', 'admin', 'up')">▲</button>
+              <span class="vote-count">28</span>
+              <button class="vote-btn downvote" onclick="handleVote('Comment créer un post ?', 'admin', 'down')">▼</button>
+            </div>
+            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : admin</p>
+          </div>
+        </article>
       </div>
     </div>
-      <div class="widget popular-communities">
-        <h3>Communautés<br>Populaires</h3>
-        <ul class="communities-list">
-          <li class="community-item">
-              <img src="/img/explainlikeimfive.jpg" alt="r/explainlikeimfive" class="avatar" />
-              <div class="info">
-                <span class="name">r/explainlikeimfive</span>
-                <span class="subs">23 227 634</span>
-              </div>
-          </li>
-            <li class="community-item">
-                <img src="/img/iama.jpg" alt="Avatar" class="avatar" />
-                <div class="info">
-                    <span class="name">r/IAmA</span>
-                    <span class="subs">22 474 868</span>
-                </div>
-            </li>
-          <li class="community-item">
-              <img src="/img/classicwow.jpg" alt="r/classicwow" class="avatar" />
-              <div class="info">
-                <span class="name">r/classicwow</span>
-                <span class="subs">678 172</span>
-              </div>
-          </li>
-          <li class="community-item">
-              <img src="/img/Instagram.jpg" alt="r/Instagram" class="avatar" />
-              <div class="info">
-                <span class="name">r/Instagram</span>
-                <span class="subs">972 521</span>
-              </div>
-          </li>
-          <li class="community-item">
-              <img src="/img/NintendoSwitch.jpg" alt="r/NintendoSwitch" class="avatar" />
-              <div class="info">
-                <span class="name">r/NintendoSwitch</span>
-                <span class="subs">7 824 579</span>
-              </div>
-          </li>
-          <li class="see-more">
-            <a href="#">En voir plus</a>
-          </li>
-        </ul>
+    <div class="widget popular-communities">
+      <h3>Communautés<br>Populaires</h3>
+      <ul class="communities-list">
+        <li class="community-item">
+          <img src="/img/explainlikeimfive.jpg" alt="r/explainlikeimfive" class="avatar" />
+          <div class="info">
+            <span class="name">r/explainlikeimfive</span>
+            <span class="subs">23 227 634</span>
+          </div>
+        </li>
+        <li class="community-item">
+          <img src="/img/iama.jpg" alt="Avatar" class="avatar" />
+          <div class="info">
+            <span class="name">r/IAmA</span>
+            <span class="subs">22 474 868</span>
+          </div>
+        </li>
+        <li class="community-item">
+          <img src="/img/classicwow.jpg" alt="r/classicwow" class="avatar" />
+          <div class="info">
+            <span class="name">r/classicwow</span>
+            <span class="subs">678 172</span>
+          </div>
+        </li>
+        <li class="community-item">
+          <img src="/img/Instagram.jpg" alt="r/Instagram" class="avatar" />
+          <div class="info">
+            <span class="name">r/Instagram</span>
+            <span class="subs">972 521</span>
+          </div>
+        </li>
+        <li class="community-item">
+          <img src="/img/NintendoSwitch.jpg" alt="r/NintendoSwitch" class="avatar" />
+          <div class="info">
+            <span class="name">r/NintendoSwitch</span>
+            <span class="subs">7 824 579</span>
+          </div>
+        </li>
+        <li class="see-more">
+          <a href="#">En voir plus</a>
+        </li>
+      </ul>
     </div>
-    </div>
+  </div>
 
   <script>
     fetch('sidebar.html')
@@ -201,15 +171,16 @@
         const mainContainer = document.querySelector('.container.main');
 
         menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContainer.classList.toggle('shifted');
-            menuBtn.classList.toggle('menu-btn-shifted');
+          sidebar.classList.toggle('collapsed');
+          mainContainer.classList.toggle('shifted');
+          menuBtn.classList.toggle('menu-btn-shifted');
         });
       })
       .catch(err => console.error('Impossible de charger sidebar.html :', err));
-      document.querySelector('.btn.login').addEventListener('click', function() {
-        window.location.href = '/Login/login.html';
-      });
+
+    document.querySelector('.btn.login').addEventListener('click', function() {
+      window.location.href = '/Login/login.html';
+    });
   </script>
   <script>
     // Fonction pour vérifier si l'utilisateur est connecté
@@ -242,108 +213,70 @@
     // Appeler updateLoginButton au chargement de la page
     updateLoginButton();
 
-    // Fonction pour charger les votes de l'utilisateur
-    function loadUserVotes() {
-      if (!isUserLoggedIn()) return;
-
-      fetch('/api/posts/votes', {
-        headers: {
-          'X-Username': getUsername()
-        }
-      })
-      .then(response => response.json())
-      .then(votes => {
-        // Mettre à jour l'interface avec les votes de l'utilisateur
-        Object.entries(votes).forEach(([title, voteData]) => {
-          const postElement = Array.from(document.querySelectorAll('.post')).find(
-            post => post.querySelector('.title').textContent === title
-          );
-          if (postElement) {
-            const upvoteBtn = postElement.querySelector('.upvote');
-            const downvoteBtn = postElement.querySelector('.downvote');
-            const voteCount = postElement.querySelector('.vote-count');
-            
-            // Mettre à jour le compteur
-            if (voteData.count !== undefined) {
-              voteCount.textContent = voteData.count;
-            }
-            
-            // Mettre à jour les boutons
-            if (voteData.userVote === 1) {
-              upvoteBtn.classList.add('active');
-            } else if (voteData.userVote === -1) {
-              downvoteBtn.classList.add('active');
-            }
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Erreur lors du chargement des votes:', error);
-      });
-    }
-
-    function renderPosts(posts) {
-      const container = document.getElementById('postsContainer');
-      container.innerHTML = '';
-      posts.forEach(post => {
-        const postDiv = document.createElement('article');
-        postDiv.className = 'post';
-        postDiv.innerHTML = `
-          <div class="content">
-            <div class="post-header">
-              <div>
-                <span class="subreddit">r/france</span>
-                <span class="dot">•</span>
-                <span class="time">il y a ...</span>
-              </div>
-              <div class="post-options">
-                <button class="options-btn">⋯</button>
-                <div class="options-menu">
-                  <button onclick="editPost('${post.title}', '${post.content}', '${post.author}')">Modifier</button>
-                  <button onclick="deletePost('${post.title}', '${post.author}')">Supprimer</button>
-                </div>
-              </div>
-            </div>
-            <h2 class="title">${post.title}</h2>
-            <div class="image-wrapper">
-              <img src="/img/${post.content}" alt="Image du post" />
-            </div>
-            <div class="actions">
-              <button class="action-btn">↗</button>
-              <button class="action-btn">💬</button>
-              <button class="action-btn">💾</button>
-            </div>
-            <div class="vote-container">
-              <button class="vote-btn upvote" onclick="handleVote('${post.title}', '${post.author}', 'up')">▲</button>
-              <span class="vote-count" data-post-title="${post.title}">0</span>
-              <button class="vote-btn downvote" onclick="handleVote('${post.title}', '${post.author}', 'down')">▼</button>
-            </div>
-            <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
-          </div>
-        `;
-        container.appendChild(postDiv);
-
-        // Ajouter les event listeners pour le menu d'options
-        const optionsBtn = postDiv.querySelector('.options-btn');
-        const optionsMenu = postDiv.querySelector('.options-menu');
-        
-        optionsBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          optionsMenu.classList.toggle('show');
-        });
-
-        // Fermer le menu si on clique ailleurs
-        document.addEventListener('click', () => {
-          optionsMenu.classList.remove('show');
-        });
-      });
-
-      // Charger les votes pour chaque post
-      if (isUserLoggedIn()) {
-        loadUserVotes();
+    // Fonction pour créer un post
+    function handleCreatePost() {
+      if (!localStorage.getItem('username')) {
+        window.location.href = '/Login/login.html';
+        return;
       }
+      window.location.href = '/html/createpost.html';
     }
 
+    // Fonction pour charger les posts
+    function loadPosts() {
+      fetch('/api/posts')
+        .then(response => response.json())
+        .then(posts => {
+          const postsContainer = document.getElementById('postsContainer');
+          
+          // Garder les posts par défaut si aucun post n'est retourné
+          if (posts.length === 0) {
+            return;
+          }
+
+          // Ajouter les nouveaux posts après les posts par défaut
+          posts.forEach(post => {
+            const postDiv = document.createElement('article');
+            postDiv.className = 'post';
+            
+            postDiv.innerHTML = `
+              <div class="content">
+                <div class="post-header">
+                  <div>
+                    <span class="subreddit">r/france</span>
+                    <span class="dot">•</span>
+                    <span class="time">il y a ...</span>
+                  </div>
+                </div>
+                <h2 class="title">${post.title}</h2>
+                <div class="image-wrapper">
+                  <img src="/img/${post.content}" alt="Image du post" />
+                </div>
+                <div class="actions">
+                  <button class="action-btn">↗</button>
+                  <button class="action-btn">💬</button>
+                  <button class="action-btn">💾</button>
+                </div>
+                <div class="votes">
+                  <button class="vote-btn upvote" onclick="handleVote('${post.title}', '${post.author}', 'up')">▲</button>
+                  <span class="vote-count">0</span>
+                  <button class="vote-btn downvote" onclick="handleVote('${post.title}', '${post.author}', 'down')">▼</button>
+                </div>
+                <p style="margin-top:0.5rem; color:#aaa; font-size:0.9em;">Auteur : ${post.author}</p>
+              </div>
+            `;
+            postsContainer.appendChild(postDiv);
+          });
+
+          // Charger les votes pour chaque post
+          if (isUserLoggedIn()) {
+            loadUserVotes();
+          }
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+
+    // Fonction pour voter
     function handleVote(title, author, voteType) {
       if (!isUserLoggedIn()) {
         window.location.href = '/Login/login.html';
@@ -362,10 +295,61 @@
           voteType: voteType === 'up' ? 1 : -1
         })
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur lors du vote');
+        }
+        return response.json();
+      })
       .then(data => {
-        if (data.message) {
-          // Mettre à jour l'interface
+        // Mettre à jour l'interface
+        const postElement = Array.from(document.querySelectorAll('.post')).find(
+          post => post.querySelector('.title').textContent === title
+        );
+        if (postElement) {
+          const upvoteBtn = postElement.querySelector('.upvote');
+          const downvoteBtn = postElement.querySelector('.downvote');
+          const voteCount = postElement.querySelector('.vote-count');
+          
+          // Réinitialiser les classes
+          upvoteBtn.classList.remove('active');
+          downvoteBtn.classList.remove('active');
+          
+          // Mettre à jour selon le vote
+          if (data.voteType === 1) {
+            upvoteBtn.classList.add('active');
+          } else if (data.voteType === -1) {
+            downvoteBtn.classList.add('active');
+          }
+          
+          // Mettre à jour le compteur
+          voteCount.textContent = data.voteCount;
+        }
+      })
+      .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors du vote');
+      });
+    }
+
+    // Fonction pour charger les votes de l'utilisateur
+    function loadUserVotes() {
+      if (!isUserLoggedIn()) return;
+
+      fetch('/api/posts/votes', {
+        headers: {
+          'X-Username': getUsername()
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des votes');
+        }
+        return response.json();
+      })
+      .then(votes => {
+        // Mettre à jour l'interface avec les votes de l'utilisateur
+        Object.entries(votes).forEach(([title, voteData]) => {
           const postElement = Array.from(document.querySelectorAll('.post')).find(
             post => post.querySelector('.title').textContent === title
           );
@@ -374,90 +358,25 @@
             const downvoteBtn = postElement.querySelector('.downvote');
             const voteCount = postElement.querySelector('.vote-count');
             
-            // Réinitialiser les classes
-            upvoteBtn.classList.remove('active');
-            downvoteBtn.classList.remove('active');
+            // Mettre à jour le compteur
+            voteCount.textContent = voteData.count;
             
-            // Mettre à jour selon le vote
-            if (data.voteType === 1) {
+            // Mettre à jour les boutons
+            if (voteData.userVote === 1) {
               upvoteBtn.classList.add('active');
-            } else if (data.voteType === -1) {
+            } else if (voteData.userVote === -1) {
               downvoteBtn.classList.add('active');
             }
-            
-            // Mettre à jour le compteur
-            if (data.voteCount !== undefined) {
-              voteCount.textContent = data.voteCount;
-            }
           }
-        }
+        });
       })
       .catch(error => {
-        console.error('Erreur:', error);
+        console.error('Erreur lors du chargement des votes:', error);
       });
     }
 
-    function editPost(title, content, author) {
-      if (!isUserLoggedIn() || getUsername() !== author) {
-        alert('Vous n\'êtes pas autorisé à modifier ce post');
-        return;
-      }
-      // Rediriger vers la page de modification
-      window.location.href = `/html/editpost.html?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`;
-    }
-
-    function deletePost(title, author) {
-      if (!isUserLoggedIn() || getUsername() !== author) {
-        alert('Vous n\'êtes pas autorisé à supprimer ce post');
-        return;
-      }
-
-      if (confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
-        fetch('/api/posts/delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Username': getUsername()
-          },
-          body: JSON.stringify({
-            title: title,
-            author: author
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            alert(data.message);
-            // Recharger les posts
-            fetch('/api/posts')
-              .then(response => response.json())
-              .then(posts => renderPosts(posts))
-              .catch(err => {
-                console.error('Erreur lors du rechargement des posts:', err);
-              });
-          }
-        })
-        .catch(error => {
-          console.error('Erreur:', error);
-          alert('Une erreur est survenue lors de la suppression du post');
-        });
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', function() {
-      updateLoginButton();
-      fetch('/api/posts')
-        .then(response => response.json())
-        .then(posts => {
-          renderPosts(posts);
-          if (isUserLoggedIn()) {
-            loadUserVotes();
-          }
-        })
-        .catch(err => {
-          document.getElementById('postsContainer').innerText = 'Erreur lors du chargement des posts.';
-        });
-    });
+    // Charger les posts au démarrage
+    loadPosts();
   </script>
 </body>
 </html>
