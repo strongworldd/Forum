@@ -124,6 +124,7 @@ func getuserdata(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Session invalide", http.StatusUnauthorized)
         return
     }
+	
     user, err := tables.GetUserByID(userID)
     if err != nil {
         http.Error(w, "Utilisateur inconnu", http.StatusNotFound)

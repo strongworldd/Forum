@@ -16,7 +16,6 @@ func ResetPostsTable() {
 }
 
 func Deletepost(w http.ResponseWriter, r *http.Request) {
-    fmt.Println(w, r)
     if r.Method != http.MethodPost {
         http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
         return
@@ -29,6 +28,7 @@ func Deletepost(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
         return
     }
+
     id := data.ID
 	database, err := sql.Open("sqlite3", "../BDD/posts.db")
     if err != nil {
@@ -36,6 +36,23 @@ func Deletepost(w http.ResponseWriter, r *http.Request) {
         return
     }
     defer database.Close()
+
+    cookie, err := r.Cookie("sessionid")
+    if err != nil {
+        http.Error(w, "Non authentifié", http.StatusUnauthorized)
+        return
+    }
+
+    author, err := GetPostCreator(id)
+    if err != nil {
+        http.Error(w, "Auteur du post inconnu", http.StatusInternalServerError)
+        return
+    }
+
+    if cookie.Value != author {
+        http.Error(w, "Vous ne pouvez pas supprimer ce post", http.StatusForbidden)
+        return
+    }
 
     rows, err := database.Query("SELECT content FROM posts WHERE id = ?", id)
 
@@ -98,4 +115,20 @@ func LoadPosts() {
 		rows.Scan(&id, &title, &content, &author)
 		fmt.Printf("%d: %s by %s\nContent: %s\n", id, title, author, content)
 	}
+}
+
+func GetPostCreator(id int) (string, error) {
+    database, _ := sql.Open("sqlite3", "../BDD/posts.db")
+    defer database.Close()
+
+    row := database.QueryRow("SELECT author FROM posts WHERE id = ?", id)
+    var author string
+    err := row.Scan(&author)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return "", fmt.Errorf("no post found with id %d", id)
+        }
+        return "", fmt.Errorf("error fetching post creator: %w", err)
+    }
+    return author, nil
 }
