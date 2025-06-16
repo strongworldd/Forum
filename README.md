@@ -25,7 +25,7 @@ Un projet de forum web inspiré de Reddit, développé en Go avec une interface 
 
 1. **Cloner le dépôt**
    ```bash
-   git clone <url-du-repo>
+   git clone [<url-du-repo>](https://github.com/strongworldd/Forum.git)
    cd Forum
    ```
 
