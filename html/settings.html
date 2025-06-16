@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paramètres - Panddit</title>
+  <link rel="stylesheet" href="../css/settings.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo">
+        <h1>Paramètres</h1>
+      </div>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="username">Nom d'utilisateur</label>
+          <input type="text" id="username" name="username">
+        </div>
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input type="email" id="email" name="email">
+        </div>
+        <div class="form-group">
+          <label for="newpassword">Nouveau mot de passe ?</label>
+          <input type="password" id="newpassword" name="newpassword">
+          <div class="password-icon">
+            <i data-feather="eye" id="newpassword-eye-open"></i>
+            <i data-feather="eye-off" id="newpassword-eye-closed" style="display: none;"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirm-newpassword">Confirmez le nouveau mot de passe</label>
+          <input type="password" id="confirm-newpassword" name="confirm-newpassword" >
+          <div class="password-icon">
+            <i data-feather="eye" id="confirm-newpassword-eye-open"></i>
+            <i data-feather="eye-off" id="confirm-newpassword-eye-closed" style="display: none;"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" name="password" required>
+          <div class="password-icon">
+            <i data-feather="eye" id="password-eye-open"></i>
+            <i data-feather="eye-off" id="password-eye-closed" style="display: none;"></i>
+          </div>
+        </div>
+        <button type="submit" class="save-button">Sauvegarder</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+
+    function togglePassword(inputId, eyeOpenId, eyeClosedId) {
+      const input = document.getElementById(inputId);
+      const eyeOpen = document.getElementById(eyeOpenId);
+      const eyeClosed = document.getElementById(eyeClosedId);
+
+      eyeOpen.addEventListener("click", () => {
+        input.type = "text";
+        eyeOpen.style.display = "none";
+        eyeClosed.style.display = "inline";
+      });
+
+      eyeClosed.addEventListener("click", () => {
+        input.type = "password";
+        eyeClosed.style.display = "none";
+        eyeOpen.style.display = "inline";
+      });
+    }
+
+    togglePassword("password", "password-eye-open", "password-eye-closed");
+    togglePassword("newpassword", "newpassword-eye-open", "newpassword-eye-closed");
+    togglePassword("confirm-newpassword", "confirm-newpassword-eye-open", "confirm-newpassword-eye-closed");
+  </script>
+<script>
+  document.querySelector('.login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const newPassword = document.getElementById('newpassword').value;
+    const confirmNewPassword = document.getElementById('confirm-newpassword').value;
+    const password = document.getElementById('password').value;
+    
+    if (!password) {
+      alert('Veuillez rentrer votre mot de passe actuel.');
+      return;
+    }
+    
+    if (newPassword != confirmNewPassword) {
+      console.log(newpassword, confirmNewPassword);
+      alert('Le nouveau mot de passe n\'est pas identique dans les deux champs.');
+      return;
+    }
+
+    console.log('Envoi des données:', { username, email});
+
+    try {
+      const res = await fetch('/api/setdatas', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, email, newPassword, password})
+      });
+
+      if (res.ok) {
+        window.location.href = './home copy.html';
+      } else {
+        const errorData = await res.text();
+        console.error('Erreur serveur:', errorData);
+        alert(errorData);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de l\'inscription');
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  fetch('/api/me')
+    .then(res => res.json())
+    .then(user => {
+      const usernameInput = document.querySelector('input[name="username"]');
+      const emailInput = document.querySelector('input[name="email"]');
+      if (usernameInput) usernameInput.value = user.username;
+      if (emailInput) emailInput.value = user.email;
+    });
+  });
+</script>
+</body>
+</html>

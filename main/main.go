@@ -26,9 +26,10 @@ func main() {
 	http.HandleFunc("/api/register", registerHandler)
 	http.HandleFunc("/api/login", loginHandler)
 	http.HandleFunc("/createpost", createPostHandler)
-	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
+	http.HandleFunc("/api/posts", postsAPIHandler)
 	http.HandleFunc("/deletepost", tables.Deletepost)
 	http.HandleFunc("/api/me", getuserdata)
+	http.HandleFunc("/api/setdatas", tables.SaveSettingsToUser)
 
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
@@ -124,7 +125,7 @@ func getuserdata(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Session invalide", http.StatusUnauthorized)
         return
     }
-	
+
     user, err := tables.GetUserByID(userID)
     if err != nil {
         http.Error(w, "Utilisateur inconnu", http.StatusNotFound)
