@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -26,6 +27,7 @@ func main() {
 	http.HandleFunc("/api/login", loginHandler)
 	http.HandleFunc("/createpost", createPostHandler)
 	http.HandleFunc("/api/posts", postsAPIHandler) // <-- Ajout de la route API pour les posts
+	http.HandleFunc("/deletepost", tables.Deletepost)
 
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../img"))))
@@ -107,22 +109,12 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	author := r.FormValue("author")
 
 	// On récupère le fichier image
-	file, handler, err := r.FormFile("content")
+	file, _, err := r.FormFile("content")
 	if err != nil {
 		http.Error(w, "Erreur fichier", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
-
-	// On sauve le fichier dans le dossier img/
-	imgPath := "../img/" + handler.Filename
-	dst, err := os.Create(imgPath)
-	if err != nil {
-		http.Error(w, "Erreur sauvegarde image", http.StatusInternalServerError)
-		return
-	}
-	defer dst.Close()
-	io.Copy(dst, file)
 
 	// On enregistre le chemin de l'image dans la BDD
 	dbPosts, err := sql.Open("sqlite3", "../BDD/posts.db")
@@ -139,13 +131,39 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(title, handler.Filename, author)
+	_, err = stmt.Exec(title, "post0.jpg", author)
 	if err != nil {
 		http.Error(w, "Erreur insertion", 500)
 		return
 	}
 
 	http.Redirect(w, r, "/html/home copy.html", http.StatusSeeOther)
+
+	rows, _ := dbPosts.Query("SELECT id FROM posts")
+
+	var postID int
+	for rows.Next() {
+		err = rows.Scan(&postID)
+		if err != nil {
+			http.Error(w, "Erreur lecture ID post", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	filename := "post" + strconv.Itoa(postID) + ".jpg"
+
+	// On sauve le fichier dans le dossier img/
+	imgPath := "../img/" + filename
+	dst, err := os.Create(imgPath)
+	if err != nil {
+		http.Error(w, "Erreur sauvegarde image", http.StatusInternalServerError)
+		return
+	}
+	defer dst.Close()
+	io.Copy(dst, file)
+
+	// On met à jour le chemin de l'image dans la BDD
+	_, _ = dbPosts.Exec("UPDATE posts SET content = ? WHERE id = ?", filename, postID)
 }
 
 func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
@@ -156,7 +174,7 @@ func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dbPosts.Close()
 
-	rows, err := dbPosts.Query("SELECT title, content, author FROM posts ORDER BY id DESC")
+	rows, err := dbPosts.Query("SELECT id, title, content, author FROM posts ORDER BY id DESC")
 	if err != nil {
 		http.Error(w, "Erreur lecture BDD", 500)
 		return
@@ -164,6 +182,7 @@ func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type Post struct {
+		ID 		int `json:"id"`
 		Title   string `json:"title"`
 		Content string `json:"content"`
 		Author  string `json:"author"`
@@ -171,7 +190,7 @@ func postsAPIHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var p Post
-		rows.Scan(&p.Title, &p.Content, &p.Author)
+		rows.Scan(&p.ID, &p.Title, &p.Content, &p.Author)
 		posts = append(posts, p)
 	}
 	w.Header().Set("Content-Type", "application/json")
